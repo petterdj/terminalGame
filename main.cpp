@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
     refresh();
 
 
-    usleep(3000);
+    usleep(2000);
 
     _yVelocity = newVelocity(_yVelocity, _g + yAcceleration);
     _xVelocity = newVelocity(_xVelocity, xAcceleration); 
