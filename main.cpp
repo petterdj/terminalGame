@@ -1,30 +1,41 @@
 #include <iostream>
 #include <stdio.h>
-#include <math.h>
 #include <ncurses.h>
 #include <unistd.h>
+#include <vector>
+#include <fstream>
+#include <sstream>
 #include <boost/lexical_cast.hpp>
+#include <boost/tuple/tuple.hpp>
+#include "animations.h"
+#include "constants.h"
+#include "physics.h"
 
 float _terminalVelocity = 0;
 float _timestep = 0.01;
-float _g = -9.8;
-float _pi = 3.14;
 
-float _yPosition = 20;
-float _xPosition = 0;
+float _yPosition = 10;
+float _xPosition = 10;
 float _yVelocity = 0;
 float _xVelocity = 0;
+float _yAcceleration = 0;
+float _xAcceleration = 0;
+int _facing = RIGHT;
+int _directionKeyTimer = 0;
 
+int _heavyAttackTimer = 0;
+int _lightAttackTimer = 0;
 
-float newVelocity(float velocity, float acceleration) {
-  velocity = velocity + acceleration * _timestep;
-  if (fabs(velocity) >= _terminalVelocity) return _terminalVelocity;
-  return velocity;
+std::vector<boost::tuple<int, int>> _level;
+
+bool atRest() {
+  // TODO Logic to check if player is at rest on the ground
+  return true;
 }
 
 void upkey() {
-  if (_yPosition == 0) {
-    _yVelocity = 10;
+  if (atRest()) {
+    _yVelocity = -10;
   }
 }
 
@@ -33,15 +44,34 @@ void downkey() {
 }
 
 void rightkey() {
-  _xVelocity = -30;
+  _directionKeyTimer = 5;
+  _xVelocity = 100;
+  _facing = RIGHT;
 }
 
 void leftkey() {
-  _xVelocity = 30;
+  _directionKeyTimer = 5;
+  _xVelocity = -100;
+  _facing = LEFT;
 }
 
 void nokey() {
-  _xVelocity = 0;
+  if (_directionKeyTimer <= 0) {
+    _directionKeyTimer = 0;
+    _xVelocity = 0;
+  } else _directionKeyTimer--;
+}
+
+void akey() {
+  _yVelocity = -10;
+}
+
+void skey() { // Heavy attack
+  if (_heavyAttackTimer == 0 && _lightAttackTimer == 0) _heavyAttackTimer = 70;
+}
+
+void dkey() { // Light attack
+  if(_heavyAttackTimer == 0 && _lightAttackTimer == 0) _lightAttackTimer = 20;
 }
 
 void keyboardControl(int inputKey) {
@@ -58,8 +88,73 @@ void keyboardControl(int inputKey) {
     case 68: // Left
       leftkey();
       break;
+    case 97: // a
+      akey();
+      break;
+    case 115: // s
+      skey();
+      break;
+    case 100: // d
+      dkey();
+      break;
     default:
       nokey();
+  }
+}
+
+void drawBorder() {
+  for (unsigned int i = 0; i < HEIGHT; ++i) {
+    mvprintw(i, 0, "#");
+    mvprintw(i, WIDTH-1, "#");
+  }
+
+  for (unsigned int i = 0; i < WIDTH; ++i) {
+    mvprintw(0, i, "#");
+    mvprintw(HEIGHT-1, i, "#");
+  }
+}
+
+void drawLevel() {
+  for(unsigned int i; i < _level.size(); ++i) {
+    mvprintw(_level[i].get<0>(), _level[i].get<1>(), "#");
+  }
+}
+
+void draw() {
+  mvprintw(_yPosition, _xPosition, "o");
+  mvprintw(1, 10, boost::lexical_cast<std::string>(_xVelocity).c_str());
+  mvprintw(2, 10, boost::lexical_cast<std::string>(_xAcceleration).c_str());
+  mvprintw(1, 30, boost::lexical_cast<std::string>(_yVelocity).c_str());
+  mvprintw(2, 30, boost::lexical_cast<std::string>(_yAcceleration).c_str());
+  mvprintw(3, 10, boost::lexical_cast<std::string>(_xPosition).c_str());
+  mvprintw(3, 30, boost::lexical_cast<std::string>(_yPosition).c_str());
+  drawBorder();
+  drawLevel();
+}
+
+void loadLevel() {
+  std::ifstream infile("level1");
+  std::string line;
+  unsigned int y = 0;
+  while(std::getline(infile, line)) {
+    for (unsigned int x = 0; x < line.length(); ++x) {
+      if(line[x] == '#') _level.push_back(boost::tuple<int, int>(y, x));
+    }
+    ++y;
+  }
+  infile.close();
+}
+
+void collisionDetect() {
+  int y;
+  int x;
+  for (unsigned int i = 0; i < _level.size(); ++i) {
+    y = _level[i].get<0>();
+    x = _level[i].get<1>();
+    if ((_yPosition >= y && _yPosition <= y+0.1) && (_xPosition >= x && _xPosition <= x+0.9)) {
+      _yPosition = y;
+      _yVelocity = -elasticity*_yVelocity;
+    }
   }
 }
 
@@ -68,49 +163,44 @@ int main(int argc, char *argv[]) {
   noecho();
   curs_set(FALSE);
   raw();
+  resize_term(HEIGHT, WIDTH);
+
+  loadLevel();
 
   float time = 0;
-
-  float yAcceleration = 0;
-  float xAcceleration = 0;
-
-  float radius = 1;
-  float mass = 10;
-  float elasticity = 0.5;
-  
-  float fluidDensity = 1.225; // Air at 15deg C at sea level
-  float projectedObjectArea = _pi*pow(radius, 2.0); // Sphere with r=1
-  float dragCoefficient = 0.47; // Drag coefficient for a sphere
-  float terminalVelocitySquared = ((2.0*mass*_g)/(fluidDensity*projectedObjectArea*dragCoefficient));
   
   int inputKey;
 
-  _terminalVelocity = sqrt(terminalVelocitySquared);
+  _terminalVelocity = terminalVelocity();
 
   while(true) {
     clear();
-    mvprintw(21, 0, "###################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################");
-    mvprintw(-_yPosition+20, -_xPosition+20, "o");
-    mvprintw(0, 0, boost::lexical_cast<std::string>(inputKey).c_str());
+    draw();
+    mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
+    if (_heavyAttackTimer > 0)
+      _heavyAttackTimer = performHeavyAttack(_heavyAttackTimer, _facing, _yPosition, _xPosition);
+    if (_lightAttackTimer > 0)
+      _lightAttackTimer = performLightAttack(_lightAttackTimer, _facing, _yPosition, _xPosition);
     timeout(10);
     inputKey = getch();
     if (inputKey == 50) break;
     keyboardControl(inputKey);
     refresh();
 
-
     usleep(2000);
 
-    _yVelocity = newVelocity(_yVelocity, _g + yAcceleration);
-    _xVelocity = newVelocity(_xVelocity, xAcceleration); 
+    _yVelocity = newVelocity(_yVelocity, _yAcceleration, _timestep, _terminalVelocity, true);
+    _xVelocity = newVelocity(_xVelocity, _xAcceleration, _timestep, _terminalVelocity); 
     _yPosition = _yPosition + _yVelocity * _timestep;
     _xPosition = _xPosition + _xVelocity * _timestep;
-    
-    if (_yPosition <= 0) {
-      _yPosition = 0;
-      _yVelocity = -elasticity*_yVelocity;
-    }
- 
+   
+    collisionDetect();
+
+    //if (_yPosition >= HEIGHT-2) {
+    //  _yPosition = HEIGHT-2;
+    //  _yVelocity = -elasticity*_yVelocity;
+    //}
+
     time += _timestep; 
   }
 
