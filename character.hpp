@@ -1,5 +1,6 @@
 #ifndef MYCHARACTER
 #define MYCHARACTER
+#include "object.hpp"
 #include <iostream>
 
 namespace terminalGame {
@@ -11,7 +12,7 @@ namespace terminalGame {
     public:
       // CONSTRUCTORS //
       Character();
-      Character(const float, const float, const string, const int);
+      Character(const float, const float, const std::string, const int);
       Character(const Character&);
       Character(Character&&);
 
@@ -25,6 +26,6 @@ namespace terminalGame {
       // FUNCTIONS //
       virtual int getFacing() const;
       virtual void setFacing(const int); 
-  }
+  };
 }
 #endif

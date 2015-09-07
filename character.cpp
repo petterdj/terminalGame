@@ -9,7 +9,7 @@ using namespace terminalGame;
    _facing = RIGHT; 
   }
 
-  Character::Character(const float y, const float x, const string drawChar, const int facing) :
+  Character::Character(const float y, const float x, const std::string drawChar, const int facing) :
     Object(y, x, drawChar) {
     _facing = facing;
   }
@@ -17,7 +17,7 @@ using namespace terminalGame;
   Character::Character(const Character& o) :
     Object(o) {
     if (this == &o) return;
-    _facing(o._facing);
+    _facing = o._facing;
   }
 
   Character::Character(Character&& o) :
@@ -27,27 +27,28 @@ using namespace terminalGame;
   }
 
 // OPERATORS //
-  Character& Character::operator=(const Character& o) :
-    Object::operator=(o) {
+  Character& Character::operator=(const Character& o) {
     if (this == &o) return *this;
+    Object::operator=(o);
     _facing = o._facing;
+    return *this;
   }
 
-  Character& operator=(Character&& o) :
-    Object::operator=(o) {
+  Character& Character::operator=(Character&& o) {
     if (this == &o) return *this;
+    Object::operator=(o);
     _facing = o._facing;
     o._facing = 0;
+    return *this;
   }
 
 // DESTRUCTOR //
   Character::~Character() {
-    ~Object();
     _facing = 0;
   }
 
 // FUNCTIONS //
-  const int Character::getFacing() const {
+  int Character::getFacing() const {
     return _facing;
   }
 
