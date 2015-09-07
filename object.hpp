@@ -8,12 +8,12 @@ namespace terminalGame {
     protected:
       float _yPosition;
       float _xPosition;
-      string _drawChar;
+      std::string _drawChar;
 
     public:
       // CONSTRUCTORS //
       Object();
-      Object(const float, const float, const string);
+      Object(const float, const float, const std::string);
       Object(const Object&);
       Object(Object&&);
 
@@ -27,11 +27,11 @@ namespace terminalGame {
       // FUNCTIONS //
       virtual float getYPosition() const;
       virtual float getXPosition() const;
-      virtual string getDrawChar() const;
+      virtual std::string getDrawChar() const;
       virtual void setYPosition(const float);
       virtual void setXPosition(const float);
-      virtual void setDrawChar(const string);
-  }
+      virtual void setDrawChar(const std::string);
+  };
 }
 
 #endif

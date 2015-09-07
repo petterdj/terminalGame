@@ -9,10 +9,11 @@ Object::Object() {
   _drawChar = " ";
 }
 
-Object::Object(const float y, const float x, const string drawChar) :
-  _yPosition(y);
-  _xPosition(x);
-  _drawChar(drawChar) {}
+Object::Object(const float y, const float x, const std::string drawChar) {
+  _yPosition = y;
+  _xPosition = x;
+  _drawChar = drawChar;
+}
 
 Object::Object(const Object& o) {
   if (this == &o) return;
@@ -36,7 +37,7 @@ Object& Object::operator=(const Object& o) {
   _yPosition = o._yPosition;
   _xPosition = o._xPosition;
   _drawChar = o._drawChar;
-  return this;
+  return *this;
 }
 
 Object& Object::operator=(Object&& o) {
@@ -44,10 +45,10 @@ Object& Object::operator=(Object&& o) {
   _yPosition = o._yPosition;
   _xPosition = o._xPosition;
   _drawChar = o._drawChar;
-  
   o._yPosition = 0;
   o._xPosition = 0;
   o._drawChar = "";
+  return *this;
 }
 
 // DESTRUCTOR //
@@ -66,7 +67,7 @@ float Object::getXPosition() const {
   return _xPosition;
 }
 
-float Object::getDrawChar() const {
+std::string Object::getDrawChar() const {
   return _drawChar;
 }
 
@@ -78,6 +79,6 @@ void Object::setXPosition(const float x) {
   _xPosition = x;
 }
 
-void Object::setDrawChar(const string drawChar) {
+void Object::setDrawChar(const std::string drawChar) {
   _drawChar = drawChar;
 }
