@@ -5,7 +5,7 @@
 
 float pi = 3.14;
 float g = 9.8;
-float elasticity = 0.1;
+float elasticity = 0;
 float dragCoefficient = 0.47; // Drag coefficient for a sphere
 float fluidDensity = 1.225; // Air at 15deg C at sea level
 
