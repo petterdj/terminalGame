@@ -10,6 +10,9 @@
 #include "animations.h"
 #include "constants.h"
 #include "physics.h"
+#include "block.hpp"
+
+using namespace terminalGame;
 
 float _terminalVelocity = 0;
 float _timestep = 0.01;
@@ -26,12 +29,15 @@ int _directionKeyTimer = 0;
 int _heavyAttackTimer = 0;
 int _lightAttackTimer = 0;
 
-std::string _level[HEIGHT][WIDTH];
+std::vector<Block*> _levelVector;
+Block* _level[HEIGHT][WIDTH];
 
 bool atRest() {
   int y = int(_yPosition);
   int x = int(_xPosition);
-  return (_level[y+1][x] == "#");
+  Block* block = _level[y+1][x];
+  if (block == 0 || (block != 0 && block->isPassableFromAbove())) return false;
+  return true;
 }
 
 void upkey() {
@@ -115,7 +121,7 @@ void drawPlayer() {
 void drawLevel() {
   for(size_t y = 0; y < HEIGHT; ++y) {
     for(size_t x = 0; x < WIDTH; ++x) {
-      mvprintw(y, x, _level[y][x].c_str());
+      if (_level[y][x] != 0) mvprintw(y, x, _level[y][x]->getDrawChar().c_str());
     }
   }
 }
@@ -143,8 +149,12 @@ void loadLevel() {
   std::string line;
   size_t y = 0;
   while(std::getline(infile, line)) {
-    for (unsigned int x = 0; x < line.length(); ++x) {
-      if(line[x] == '#') _level[y][x] = "#";
+    for (size_t x = 0; x < line.length(); ++x) {
+      if(line[x] == '#') {
+        Block* block = new Block((int) y, (int) x); 
+        _levelVector.push_back(block);
+        _level[y][x] = block;
+      }
     }
     ++y;
   }
@@ -158,21 +168,27 @@ float bounce(float velocity) {
 void collisionDetect() {
   int y = int(_yPosition);
   int x = int(_xPosition);
-  if (_level[y+1][x] == "#" && _yVelocity > 0) {
+  if (y == HEIGHT) _yPosition = HEIGHT;
+  if (x == WIDTH) _xPosition = WIDTH;
+  if (_level[y+1][x] != 0 && !_level[y+1][x]->isPassableFromAbove() && _yVelocity > 0) {
     _yPosition = y + 0.1;
     _yVelocity = bounce(_yVelocity);
   }
-  if (_level[y-1][x] == "#" && _yVelocity < 0) {
+  if (_level[y-1][x] != 0 && !_level[y-1][x]->isPassableFromBelow() && _yVelocity < 0) {
     _yVelocity = bounce(_yVelocity);
   }
-  if (_level[y][x+1] == "#" && _xVelocity > 0) {
+  if (_level[y][x+1] != 0 && !_level[y][x+1]->isPassableFromLeft() && _xVelocity > 0) {
     _xPosition = x+0.8;
     _xVelocity = bounce(_xVelocity);
   }
-  if (_level[y][x-1] == "#" && _xVelocity < 0) {
+  if (_level[y][x-1] != 0 && !_level[y][x-1]->isPassableFromRight() && _xVelocity < 0) {
     _xPosition = x+0.2;
     _xVelocity = bounce(_xVelocity);
   }
+}
+
+void teardown() {
+  for (auto &it : _levelVector) delete it;
 }
 
 int main(int argc, char *argv[]) {
@@ -181,23 +197,20 @@ int main(int argc, char *argv[]) {
   curs_set(FALSE);
   raw();
   resize_term(HEIGHT, WIDTH);
-
   loadLevel();
-
+  bool run = true;
   float time = 0;
-  
   int inputKey;
 
   _terminalVelocity = terminalVelocity();
 
-  while(true) {
+  while(run) {
     clear();
     draw();
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
     attack();
     timeout(10);
     inputKey = getch();
-    if (inputKey == 50) break;
     keyboardControl(inputKey);
     refresh();
 
@@ -207,12 +220,14 @@ int main(int argc, char *argv[]) {
     _xVelocity = newVelocity(_xVelocity, _xAcceleration, _timestep, _terminalVelocity); 
     _yPosition = _yPosition + _yVelocity * _timestep;
     _xPosition = _xPosition + _xVelocity * _timestep;
-   
+    
     collisionDetect();
 
     time += _timestep; 
+    if (inputKey == 27);
   }
 
+  teardown();
   endwin();
 }
 
