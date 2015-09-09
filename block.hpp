@@ -16,7 +16,7 @@ namespace terminalGame {
     public:
       // CONSTRUCTORS //
       Block();
-      Block(const int, const int, const bool, const bool, const bool, const bool, const bool, const std::string);
+      Block(const int, const int, const std::string drawChar="#", const bool fromLeft=false, const bool fromRight=false, const bool fromBelow=false, const bool fromAbove=false, const bool fromAboveKeyDown=false);
       Block(const Block&);
       Block(Block&&);
 
@@ -28,14 +28,14 @@ namespace terminalGame {
       ~Block();
 
       // FUNCTIONS //
-      bool getPassableFromLeft() const;
-      bool getPassableFromRight() const;
-      bool getPassableFromBelow() const;
-      bool getPassableFromAbove() const;
-      bool getPassableFromAboveKeyDown() const;
-      bool getPassableFromSides() const;
-      bool getPlatformPassable() const;
-      bool getFullyPassable() const;
+      bool isPassableFromLeft() const;
+      bool isPassableFromRight() const;
+      bool isPassableFromBelow() const;
+      bool isPassableFromAbove() const;
+      bool isPassableFromAboveKeyDown() const;
+      bool isPassableFromSides() const;
+      bool isPlatformPassable() const;
+      bool isFullyPassable() const;
 
       void setPlatformPassable();
       void setPassableFromLeft(const bool);

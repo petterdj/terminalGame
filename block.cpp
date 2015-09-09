@@ -12,7 +12,7 @@ Block::Block() :
   _passableFromAboveKeyDown = false;
 }
 
-Block::Block(const int y, const int x, const bool fromLeft=false, const bool fromRight=false, const bool fromBelow=false, const bool fromAbove=false, const bool fromAboveKeyDown=false, const std::string drawChar="#") : 
+Block::Block(const int y, const int x, const std::string drawChar, const bool fromLeft, const bool fromRight, const bool fromBelow, const bool fromAbove, const bool fromAboveKeyDown) : 
   Object(y, x, drawChar) {
   _passableFromLeft = fromLeft;
   _passableFromRight = fromRight;
@@ -84,36 +84,36 @@ Block::~Block() {
 }
 
 // FUNCTIONS //
-bool Block::getPassableFromLeft() const {
+bool Block::isPassableFromLeft() const {
   return _passableFromLeft;
 }
 
-bool Block::getPassableFromRight() const {
+bool Block::isPassableFromRight() const {
   return _passableFromRight;
 }
 
-bool Block::getPassableFromBelow() const {
+bool Block::isPassableFromBelow() const {
   return _passableFromBelow;
 }
 
-bool Block::getPassableFromAbove() const {
+bool Block::isPassableFromAbove() const {
   return _passableFromAbove;
 }
 
-bool Block::getPassableFromAboveKeyDown() const {
+bool Block::isPassableFromAboveKeyDown() const {
   return _passableFromAboveKeyDown;
 }
 
-bool Block::getPassableFromSides() const {
+bool Block::isPassableFromSides() const {
   return _passableFromLeft && _passableFromRight;
 }
 
-bool Block::getPlatformPassable() const {
-  return getPassableFromAboveKeyDown() && getPassableFromSides() && getPassableFromBelow() && !getPassableFromAbove();
+bool Block::isPlatformPassable() const {
+  return isPassableFromAboveKeyDown() && isPassableFromSides() && isPassableFromBelow() && !isPassableFromAbove();
 }
 
-bool Block::getFullyPassable() const {
-  return getPassableFromSides() && getPassableFromAbove() && getPassableFromAboveKeyDown() && getPassableFromBelow();
+bool Block::isFullyPassable() const {
+  return isPassableFromSides() && isPassableFromAbove() && isPassableFromAboveKeyDown() && isPassableFromBelow();
 }
 
 
