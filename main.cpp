@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
     collisionDetect();
 
     time += _timestep; 
-    if (inputKey == 50) break; // Anything here that breaks the loop crashes the game on ANY keyboard input
+    if (inputKey == 50) break;
   }
   std::cout << "Goodbye5" << std::endl;
   teardown();
