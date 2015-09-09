@@ -1,3 +1,6 @@
+# Executable specific to this project
+game
+
 # Compiled Object files
 *.slo
 *.lo
