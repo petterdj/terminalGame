@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++0x -Wall -g
+CFLAGS = -std=c++0x -Wall -g -pedantic
 LDFLAGS=-lncurses
 
 default: game
