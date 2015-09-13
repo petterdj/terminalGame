@@ -162,6 +162,7 @@ void loadLevel() {
 }
 
 float bounce(float velocity) {
+  float elasticity = 0.0;
   return -elasticity*velocity;
 }
 
