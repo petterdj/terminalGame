@@ -5,46 +5,55 @@ using namespace terminalGame;
 
 // CONSTRUCTORS //
   Character::Character() :
-    Object() {
-   _facing = RIGHT; 
+    GravityObject() {
+   _facing = RIGHT;
+   _secondaryDrawChar = " ";
   }
 
-  Character::Character(const float y, const float x, const std::string drawChar, const int facing) :
-    Object(y, x, drawChar) {
+  Character::Character(const float y, const float x, const std::string leftDrawChar, std::string rightDrawChar, const int facing, const float elasticity, const int shape) :
+    GravityObject(y, x, leftDrawChar, elasticity, shape) {
     _facing = facing;
+    _secondaryDrawChar = rightDrawChar;
   }
 
   Character::Character(const Character& o) :
-    Object(o) {
+    GravityObject(o) {
     if (this == &o) return;
     _facing = o._facing;
+    _secondaryDrawChar = o._secondaryDrawChar;
   }
 
   Character::Character(Character&& o) :
-    Object(o) {
+    GravityObject(o) {
     _facing = o._facing;
+    _secondaryDrawChar = o._secondaryDrawChar;
     o._facing = 0;
+    o._secondaryDrawChar = "";
   }
 
 // OPERATORS //
   Character& Character::operator=(const Character& o) {
     if (this == &o) return *this;
-    Object::operator=(o);
+    GravityObject::operator=(o);
     _facing = o._facing;
+    _secondaryDrawChar = o._secondaryDrawChar;
     return *this;
   }
 
   Character& Character::operator=(Character&& o) {
     if (this == &o) return *this;
-    Object::operator=(o);
+    GravityObject::operator=(o);
     _facing = o._facing;
+    _secondaryDrawChar = o._secondaryDrawChar;
     o._facing = 0;
+    o._secondaryDrawChar = "";
     return *this;
   }
 
 // DESTRUCTOR //
   Character::~Character() {
     _facing = 0;
+    _secondaryDrawChar = "";
   }
 
 // FUNCTIONS //
@@ -56,3 +65,7 @@ using namespace terminalGame;
     _facing = facing;
   }
 
+  std::string Character::getDrawChar() {
+    if (_facing == LEFT) return _drawChar;
+    if (_facing == RIGHT) return _secondaryDrawChar;
+  }
