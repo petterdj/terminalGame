@@ -1,5 +1,5 @@
 #include "character.hpp"
-#include "constants.h"
+#include "utils/constants.h"
 
 using namespace terminalGame;
 
