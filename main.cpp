@@ -7,9 +7,9 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 #include <boost/tuple/tuple.hpp>
-#include "animations.h"
-#include "constants.h"
-#include "physics.h"
+#include "utils/animations.h"
+#include "utils/constants.h"
+#include "utils/physics.h"
 #include "block.hpp"
 
 using namespace terminalGame;
@@ -119,11 +119,7 @@ void drawPlayer() {
 }
 
 void drawLevel() {
-  for(size_t y = 0; y < HEIGHT; ++y) {
-    for(size_t x = 0; x < WIDTH; ++x) {
-      if (_level[y][x] != 0) mvprintw(y, x, _level[y][x]->getDrawChar().c_str());
-    }
-  }
+  for (auto &it : _levelVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
 }
 
 void draw() {
