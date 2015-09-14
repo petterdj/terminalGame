@@ -21,7 +21,7 @@ const int SPHERE = 0;
 // Physics constants
 const bool GRAVITY = true;
 const bool TIMESTEP = 0.01;
-const bool G = 9.8;
+const float G = 9.8;
 const float PI = 3.14;
 const float AIRDENSITY = 1.225; // Air at 15deg C at sea level
 const float SPHEREDRAGCOEFFICIENT = 0.47; // Drag coefficient for a sphere
