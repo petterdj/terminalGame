@@ -141,7 +141,7 @@ void attack() {
 }
 
 void loadLevel() {
-  std::ifstream infile("level1");
+  std::ifstream infile("levels/level1");
   std::string line;
   size_t y = 0;
   while(std::getline(infile, line)) {
