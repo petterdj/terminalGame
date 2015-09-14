@@ -20,6 +20,6 @@ inline float projectedObjectArea(int shape = SPHERE, float radius = 1) {
 }
 
 inline float terminalVelocity(float mass = 10, int shape = SPHERE, float radius = 1, float fluidDensity = AIRDENSITY, float dragCoefficient = SPHEREDRAGCOEFFICIENT) {
-  return sqrt(((2.0*mass*G)/(fluidDensity*projectedObjectArea()*dragCoefficient)));
+  return sqrt(((2.0*mass)/(fluidDensity*projectedObjectArea(shape, radius)*dragCoefficient)));
 }
 #endif
