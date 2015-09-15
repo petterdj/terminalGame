@@ -1,9 +1,11 @@
-#include "gravityobject.hpp"
+#include "gravityObject.hpp"
 #include "utils/constants.h"
 #include "iostream"
 
+using namespace terminalGame;
+
 // CONSTRUCTORS //
-GravityObject::GravityObject():
+GravityObject::GravityObject() :
   Object() {
   _elasticity = 0.0;
   _shape = SPHERE;
@@ -14,7 +16,7 @@ GravityObject::GravityObject():
 }
 
 GravityObject::GravityObject(const float y, const float x, const std::string drawChar, const float elasticity, const int shape):
-  Item(y, x, drawChar) {
+  Object(y, x, drawChar) {
   _elasticity = elasticity;
   _shape = shape;
   _yVelocity = 0;
@@ -97,7 +99,7 @@ int GravityObject::getShape() const { return _shape; }
 float GravityObject::getYVelocity() const { return _yVelocity; }
 float GravityObject::getXVelocity() const { return _xVelocity; }
 float GravityObject::getYAcceleration() const { return _yAcceleration; }
-float GravityObject::getXAcceleration() cosnt { return _xAcceleration; }
+float GravityObject::getXAcceleration() const { return _xAcceleration; }
 
 void GravityObject::setElasticity(const float elasticity) {
   _elasticity = elasticity;
@@ -110,10 +112,11 @@ void GravityObject::setShape(const int shape) {
 void GravityObject::setYVelocity(const float yVelocity) { _yVelocity = yVelocity; }
 void GravityObject::setXVelocity(const float xVelocity) { _xVelocity = xVelocity; }
 
-void GravityObject::setAcceleration(float value, int direction) {
+int GravityObject::setAcceleration(float value, int direction) {
   if (direction == UP) _yAcceleration = -value;
   else if (direction == DOWN) _yAcceleration = value;
   else if (direction == LEFT) _xAcceleration = -value;
   else if (direction == RIGHT) _xAcceleration = value;
-  else // Bad input TODO: Throw exception
+  else return -1;
+  return 1;
 }

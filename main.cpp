@@ -38,7 +38,7 @@ bool atRest(Character* character) {
 
 void upkey(Character* character) {
   if (atRest(character)) {
-    character->setAcceleration(10, UP);
+    character->setAcceleration(1000, UP);
   }
 }
 
@@ -49,7 +49,7 @@ void downkey(Character* character) {
 void rightkey(Character* character) {
   if (_heavyAttackTimer == 0) {
     _directionKeyTimer = 5;
-    character->setAcceleration(10, RIGHT);
+    character->setAcceleration(MOVEMENTACCELERATION, RIGHT);
     character->setFacing(RIGHT);
   }
 }
@@ -57,16 +57,22 @@ void rightkey(Character* character) {
 void leftkey(Character* character) {
   if (_heavyAttackTimer == 0) {
     _directionKeyTimer = 5;
-    character->setAcceleration(10, LEFT);
+    character->setAcceleration(MOVEMENTACCELERATION, LEFT);
     character->setFacing(LEFT);
   }
 }
 
-// TODO Requires some tuning to get desired behaviour. Idea is to accelerate opposite of movement direction until velocity reaches 0
 void nokey(Character* character) {
+  float facing = character->getFacing();
+  float xVelocity = character->getXVelocity();
+  character->setAcceleration(0, UP);
   if (_directionKeyTimer <= 0) {
     _directionKeyTimer = 0;
-    character->setAcceleration(character->getXAcceleration(), character->getFacing());
+    if (xVelocity < 0.1 && xVelocity > -0.9) {
+      character->setXVelocity(0);
+      character->setAcceleration(0, facing);
+    } else if (facing == RIGHT) character->setAcceleration(xVelocity*DECELERATIONRIGHT, LEFT);
+    else if (facing == LEFT) character->setAcceleration(xVelocity*DECELERATIONLEFT, RIGHT);
   } else _directionKeyTimer--;
 }
 
@@ -156,26 +162,33 @@ void loadLevel() {
 void collisionDetect(Character* character) {
   int y = int(character->getYPosition());
   int x = int(character->getXPosition());
-  if (y == HEIGHT) character->setYPosition(HEIGHT);
-  if (x == WIDTH) character->setXPosition(WIDTH);
-  Block* block = _level[y+1][x];
-  if (block != 0 && !block->isPassableFromAbove() && character->getYVelocity() > 0) {
+  float yVelocity = character->getYVelocity();
+  float xVelocity = character->getXVelocity();
+  float elasticity = character->getElasticity();
+  if (y == HEIGHT) character->setYPosition(HEIGHT); // Temporary solutions to avoid falling out of bounds
+  if (x == WIDTH) character->setXPosition(WIDTH); // -||-
+  // Check if a block is below
+  Block* block = _level[y+BELOW][x];
+  if (block != 0 && !block->isPassableFromAbove() && yVelocity > 0) {
     character->setYPosition(y + 0.1);
-    character->setYVelocity(bounce(character->getYVelocity(), character->getElasticity()));
-  } // TODO: Store x and y velocity in local variables to avoid accessing over and over
-  block = _level[y-1][x];
-  if (block != 0 && !block->isPassableFromBelow() && character->getYVelocity() < 0) {
-    _yVelocity = bounce(_yVelocity);
+    character->setYVelocity(bounce(yVelocity, elasticity));
   }
-  block = _level[y][x+1];
-  if (block != 0 && !block->isPassableFromLeft() && _xVelocity > 0) {
-    _xPosition = x+0.8;
-    _xVelocity = bounce(_xVelocity);
+  // Check if a block is above
+  block = _level[y+ABOVE][x];
+  if (block != 0 && !block->isPassableFromBelow() && yVelocity < 0) {
+    character->setYVelocity(bounce(yVelocity, elasticity));
   }
-  block = _level[y][x-1];
-  if (block != 0 && !block->isPassableFromRight() && _xVelocity < 0) {
-    _xPosition = x+0.2;
-    _xVelocity = bounce(_xVelocity);
+  // Check if a block is to the right
+  block = _level[y][x+RIGHT];
+  if (block != 0 && !block->isPassableFromLeft() && xVelocity > 0) {
+    character->setXPosition(x+0.8);
+    character->setXVelocity(bounce(xVelocity, elasticity));
+  }
+  // Check if a block is to the left
+  block = _level[y][x+LEFT];
+  if (block != 0 && !block->isPassableFromRight() && xVelocity < 0) {
+    character->setXPosition(x+0.2);
+    character->setXVelocity(bounce(xVelocity, elasticity));
   }
 }
 
@@ -202,7 +215,7 @@ int main(int argc, char *argv[]) {
     clear();
     draw();
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
-    attack();
+    attack(_player);
     timeout(10);
     inputKey = getch();
     keyboardControl(inputKey);
@@ -210,12 +223,13 @@ int main(int argc, char *argv[]) {
 
     usleep(2000);
 
-    _yVelocity = newVelocity(_yVelocity, _yAcceleration, _timestep, _terminalVelocity, true);
-    _xVelocity = newVelocity(_xVelocity, _xAcceleration, _timestep, _terminalVelocity); 
-    _yPosition = _yPosition + _yVelocity * _timestep;
-    _xPosition = _xPosition + _xVelocity * _timestep;
-    
-    collisionDetect();
+    // Objects affected by gravity should have individual terminal velocities
+    _player->setYVelocity(newVelocity(_player->getYVelocity(), _player->getYAcceleration(), _terminalVelocity, true));
+    _player->setXVelocity(newVelocity(_player->getXVelocity(), _player->getXAcceleration(), _terminalVelocity));
+    _player->setYPosition(newPosition(_player->getYPosition(), _player->getYVelocity()));
+    _player->setXPosition(newPosition(_player->getXPosition(), _player->getXVelocity()));
+
+    collisionDetect(_player);
 
     time += _timestep; 
     if (inputKey == 50) break;

@@ -2,14 +2,15 @@
 #define GAMECONSTANTS
 
 // Direction and map constants
-const int YOFFSET = 20;
-const int XOFFSET = 20;
 const int RIGHT = 1;
 const int LEFT = -1;
 const int UP = -2;
 const int DOWN = 2;
 const int ABOVE = -1;
 const int BELOW = 1;
+const float RIGHTOFFSET = 0.8; // For collisions to the right
+const float LEFTOFFSET = 0.2; // -||- to the left
+const float DOWNOFFSET = 0.1; // -||- downwards
 
 // Map size
 const int HEIGHT = 21;
@@ -20,10 +21,12 @@ const int SPHERE = 0;
 
 // Physics constants
 const bool GRAVITY = true;
-const bool TIMESTEP = 0.01;
+const float TIMESTEP = 0.01;
 const float G = 9.8;
 const float PI = 3.14;
 const float AIRDENSITY = 1.225; // Air at 15deg C at sea level
 const float SPHEREDRAGCOEFFICIENT = 0.47; // Drag coefficient for a sphere
-
+const float MOVEMENTACCELERATION = 100;
+const float DECELERATIONRIGHT = 5;
+const float DECELERATIONLEFT = -5;
 #endif

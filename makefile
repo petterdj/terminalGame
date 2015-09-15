@@ -6,7 +6,7 @@ default: game
 #	chmod +x main.o
 
 game: main.o object.o character.o block.o gravityObject.o
-	$(CC) $(CFLAGS) -o game main.o object.o character.o block.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -o game main.o object.o character.o block.o gravityObject.o $(LDFLAGS)
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -o main.o main.cpp 

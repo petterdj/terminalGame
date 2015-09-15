@@ -39,7 +39,7 @@ namespace terminalGame {
       void setShape(const int);
       void setYVelocity(const float);
       void setXVelocity(const float);
-      void setAcceleration(float, int direction=UP);
+      int setAcceleration(float, int direction=UP);
   };
 }
 

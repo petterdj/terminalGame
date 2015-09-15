@@ -65,7 +65,8 @@ using namespace terminalGame;
     _facing = facing;
   }
 
-  std::string Character::getDrawChar() {
+  std::string Character::getDrawChar() const {
     if (_facing == LEFT) return _drawChar;
     if (_facing == RIGHT) return _secondaryDrawChar;
+    return NULL; // Should never happen, but if it does this should help identify it
   }
