@@ -12,6 +12,7 @@ namespace terminalGame {
       float _xVelocity;
       float _yAcceleration;
       float _xAcceleration;
+      float _terminalVelocity;
 
     public:
       // CONSTRUCTORS //
@@ -34,6 +35,7 @@ namespace terminalGame {
       float getXVelocity() const;
       float getYAcceleration() const;
       float getXAcceleration() const;
+      float getTerminalVelocity() const;
 
       void setElasticity(const float);
       void setShape(const int);

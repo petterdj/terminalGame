@@ -1,6 +1,7 @@
 #include "gravityObject.hpp"
 #include "utils/constants.h"
 #include "iostream"
+#include "utils/physics.h"
 
 using namespace terminalGame;
 
@@ -13,6 +14,7 @@ GravityObject::GravityObject() :
   _xVelocity = 0;
   _yAcceleration = 0;
   _xAcceleration = 0;
+  _terminalVelocity = terminalVelocity(_shape);
 }
 
 GravityObject::GravityObject(const float y, const float x, const std::string drawChar, const float elasticity, const int shape):
@@ -23,6 +25,7 @@ GravityObject::GravityObject(const float y, const float x, const std::string dra
   _xVelocity = 0;
   _yAcceleration = 0;
   _xAcceleration = 0;
+  _terminalVelocity = terminalVelocity(_shape);
 }
 
 GravityObject::GravityObject(const GravityObject& o) :
@@ -34,6 +37,7 @@ GravityObject::GravityObject(const GravityObject& o) :
   _xVelocity = o._xVelocity;
   _yAcceleration = o._yAcceleration;
   _xAcceleration = o._xAcceleration;
+  _terminalVelocity = o._terminalVelocity;
 }
 
 GravityObject::GravityObject(GravityObject&& o) :
@@ -44,12 +48,14 @@ GravityObject::GravityObject(GravityObject&& o) :
   _xVelocity = o._xVelocity;
   _yAcceleration = o._yAcceleration;
   _xAcceleration = o._xAcceleration;
+  _terminalVelocity = o._terminalVelocity;
   o._elasticity = 0;
   o._shape = 0;
   o._yVelocity = 0;
   o._xVelocity = 0;
   o._yAcceleration = 0;
   o._xAcceleration = 0;
+  o._terminalVelocity = 0;
 }
 
 // OPERATORS //
@@ -62,6 +68,7 @@ GravityObject& GravityObject::operator=(const GravityObject& o) {
   _xVelocity = o._xVelocity;
   _yAcceleration = o._yAcceleration;
   _xAcceleration = o._xAcceleration;
+  _terminalVelocity = o._terminalVelocity;
   return *this;
 }
 
@@ -74,12 +81,14 @@ GravityObject& GravityObject::operator=(GravityObject&& o) {
   _xVelocity = o._xVelocity;
   _yAcceleration = o._yAcceleration;
   _xAcceleration = o._xAcceleration;
+  _terminalVelocity = o._terminalVelocity;
   o._elasticity = 0;
   o._shape = 0;
   o._yVelocity = 0;
   o._xVelocity = 0;
   o._yAcceleration = 0;
   o._xAcceleration = 0;
+  o._terminalVelocity = 0;
   return *this;
 }
 
@@ -91,6 +100,7 @@ GravityObject::~GravityObject() {
   _xVelocity = 0;
   _yAcceleration = 0;
   _xAcceleration = 0;
+  _terminalVelocity = 0;
 }
 
 // FUNCTION //
@@ -100,6 +110,7 @@ float GravityObject::getYVelocity() const { return _yVelocity; }
 float GravityObject::getXVelocity() const { return _xVelocity; }
 float GravityObject::getYAcceleration() const { return _yAcceleration; }
 float GravityObject::getXAcceleration() const { return _xAcceleration; }
+float GravityObject::getTerminalVelocity() const { return _terminalVelocity; }
 
 void GravityObject::setElasticity(const float elasticity) {
   _elasticity = elasticity;
@@ -107,6 +118,7 @@ void GravityObject::setElasticity(const float elasticity) {
 
 void GravityObject::setShape(const int shape) {
   _shape = shape;
+  _terminalVelocity = terminalVelocity(_shape);
 }
 
 void GravityObject::setYVelocity(const float yVelocity) { _yVelocity = yVelocity; }
