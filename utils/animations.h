@@ -11,8 +11,6 @@ int performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosi
       mvprintw(yPosition+ABOVE, xPosition, "/");
     else if(attackTimer > 35) // Frame 3
       mvprintw(yPosition+ABOVE, xPosition+facing, "/");
-//    else if(attackTimer > 20) // Frame 4
-//      mvprintw(yPosition, xPosition+facing, "-");
     else if(attackTimer > 0) // Frame 5
       mvprintw(yPosition, xPosition+facing, "\\");
   } else {
@@ -22,8 +20,6 @@ int performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosi
       mvprintw(yPosition+ABOVE, xPosition, "\\");
     else if(attackTimer > 35) // Frame 3
       mvprintw(yPosition+ABOVE, xPosition+facing, "\\");
-//    else if(attackTimer > 20) // Frame 4
-//      mvprintw(yPosition, xPosition+facing, "-");
     else if(attackTimer > 0) // Frame 5
       mvprintw(yPosition, xPosition+facing, "/");
   }
