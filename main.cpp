@@ -15,7 +15,6 @@
 
 using namespace terminalGame;
 
-float _terminalVelocity = 0;
 float _timestep = 0.01;
 
 int _directionKeyTimer = 0;
@@ -207,8 +206,6 @@ int main(int argc, char *argv[]) {
   float time = 0;
   int inputKey = -1;
 
-  _terminalVelocity = terminalVelocity();
-  
   _player = new Character(10, 10, "<", ">", RIGHT);
 
   while(run) {
@@ -224,8 +221,8 @@ int main(int argc, char *argv[]) {
     usleep(2000);
 
     // Objects affected by gravity should have individual terminal velocities
-    _player->setYVelocity(newVelocity(_player->getYVelocity(), _player->getYAcceleration(), _terminalVelocity, true));
-    _player->setXVelocity(newVelocity(_player->getXVelocity(), _player->getXAcceleration(), _terminalVelocity));
+    _player->setYVelocity(newVelocity(_player->getYVelocity(), _player->getYAcceleration(), _player->getTerminalVelocity(), true));
+    _player->setXVelocity(newVelocity(_player->getXVelocity(), _player->getXAcceleration(), _player->getTerminalVelocity()));
     _player->setYPosition(newPosition(_player->getYPosition(), _player->getYVelocity()));
     _player->setXPosition(newPosition(_player->getXPosition(), _player->getXVelocity()));
 
