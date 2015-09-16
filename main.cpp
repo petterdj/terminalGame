@@ -7,7 +7,8 @@
 #include <sstream>
 #include <boost/lexical_cast.hpp>
 #include <boost/tuple/tuple.hpp>
-#include "utils/animations.h"
+#include "graphics/animations.h"
+#include "graphics/draw.h"
 #include "utils/constants.h"
 #include "utils/physics.h"
 #include "block.hpp"
@@ -25,6 +26,7 @@ int _lightAttackTimer = 0;
 std::vector<Block*> _levelVector;
 Block* _level[HEIGHT][WIDTH];
 
+std::vector<Character*> _characterVector;
 Character* _player;
 
 bool atRest(Character* character) {
@@ -115,25 +117,6 @@ void keyboardControl(int inputKey) {
   }
 }
 
-void drawPlayer() {
-  mvprintw(_player->getYPosition(), _player->getXPosition(), _player->getDrawChar().c_str());
-}
-
-void drawLevel() {
-  for (auto &it : _levelVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
-}
-
-void draw() {
-  drawPlayer();
-  mvprintw(1, 10, boost::lexical_cast<std::string>(_player->getXVelocity()).c_str());
-  mvprintw(2, 10, boost::lexical_cast<std::string>(_player->getXAcceleration()).c_str());
-  mvprintw(1, 30, boost::lexical_cast<std::string>(_player->getYVelocity()).c_str());
-  mvprintw(2, 30, boost::lexical_cast<std::string>(_player->getYAcceleration()).c_str());
-  mvprintw(3, 10, boost::lexical_cast<std::string>(_player->getXPosition()).c_str());
-  mvprintw(3, 30, boost::lexical_cast<std::string>(_player->getYPosition()).c_str());
-  drawLevel();
-}
-
 void attack(Character* character) {
   if (_heavyAttackTimer > 0)
     _heavyAttackTimer = performHeavyAttack(_heavyAttackTimer, character->getFacing(), character->getYPosition(), character->getXPosition());
@@ -207,10 +190,11 @@ int main(int argc, char *argv[]) {
   int inputKey = -1;
 
   _player = new Character(10, 10, "<", ">", RIGHT);
-
+  _characterVector.push_back(_player);
+  
   while(run) {
     clear();
-    draw();
+    draw(_levelVector, _characterVector);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
     attack(_player);
     timeout(10);
