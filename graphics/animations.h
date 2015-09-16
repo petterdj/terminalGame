@@ -1,7 +1,7 @@
 #ifndef ANIMATIONS
 #define ANIMATIONS
 #include <ncurses.h>
-#include "constants.h"
+#include "../utils/constants.h"
 
 int performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition) {
   if(facing == RIGHT) {
