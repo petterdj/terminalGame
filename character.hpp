@@ -9,9 +9,11 @@ namespace terminalGame {
   class Character : public GravityObject {
     protected:
       int _facing;
+      int _heavyAttackTimer;
+      int _lightAttackTimer;
       std::string _secondaryDrawChar; // Facing right
       Weapon* _equippedWeapon;
-
+      
     public:
       // CONSTRUCTORS //
       Character();
@@ -36,6 +38,8 @@ namespace terminalGame {
       virtual void equip(Weapon*);
 
       virtual std::string getDrawChar() const; // Overloading
+      virtual void heavyAttack();
+      virtual void lightAttack();
   };
 }
 #endif

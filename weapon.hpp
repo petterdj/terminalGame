@@ -10,6 +10,7 @@ namespace terminalGame {
       int _oldDamageValue;
       int _timer;
       bool _equipped;
+      bool _hazardous;
 
     public:
       // CONSTRUCTORS //
@@ -30,6 +31,7 @@ namespace terminalGame {
       int getDamageValue() const;
       int getTime() const;
       bool getEquipped() const;
+      bool getHazardous() const;
 
       void setDamageValue(const int);
       void setTempDamageValue(const int damageValue, const int time);
@@ -37,6 +39,12 @@ namespace terminalGame {
       void countDown();
       void setTimer(const int);
       void setEquipped(const bool);
+      void setHazardous(const bool);
+
+      void beginLightAttack(int facing, float y, float x);
+      void endAttack();
+      int performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition);
+      int performLightAttack(int attackTimer, int facing, float yPosition, float xPosition);
   };
 }
 

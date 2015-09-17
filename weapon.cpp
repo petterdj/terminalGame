@@ -3,7 +3,6 @@
 
 using namespace terminalGame;
 
-
 // CONSTRUCTORS //
 Weapon::Weapon() : 
   GravityObject() {
@@ -81,6 +80,7 @@ Weapon::~Weapon() {
 int Weapon::getDamageValue() const { return _damageValue; }
 int Weapon::getTime() const { return _timer; }
 bool Weapon::getEquipped() const { return _equipped; }
+bool Weapon::getHazardous() const { return _hazardous; }
 
 void Weapon::setDamageValue(const int damageValue) {
   _oldDamageValue = _damageValue;
@@ -109,6 +109,52 @@ void Weapon::setTimer(const int timerValue) {
   _timer = timerValue;
 }
 
-void Weapon::setEquipped(const bool equipValue) {
-  _equipped = equipValue;
+void Weapon::setEquipped(const bool equipValue) { _equipped = equipValue; }
+void Weapon::setHazardous(const bool hazardous) { _hazardous = hazardous; }
+
+void Weapon::beginLightAttack(int facing, float y, float x) { 
+  setHazardous(true); // Attack is beginning, weapon is now hazardous 
+  setDrawChar("-");
+  setYPosition(y);
+  setXPosition(x+facing);
+}
+
+void Weapon::endAttack() {
+  setHazardous(false); // Attack is over, weapon is no longer hazardous
+  setDrawChar("");
+  setYPosition(-1);
+  setXPosition(-1);
+}
+
+int Weapon::performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition) {       
+  if (attackTimer == 70) {
+    setHazardous(true);
+    setDrawChar("|");
+    setYPosition(yPosition+ABOVE);
+    setXPosition(xPosition);
+  }
+  if (attackTimer == 60) {
+    if (facing == RIGHT) setDrawChar("/");
+    else setDrawChar("\\");
+    setYPosition(yPosition+ABOVE);
+    setXPosition(xPosition);
+  }
+  if(attackTimer == 45) { // Frame 2
+    setYPosition(yPosition+ABOVE);
+    setXPosition(xPosition+facing);
+  }
+  if (attackTimer == 35) {
+    if (facing == RIGHT) setDrawChar("\\");
+    else setDrawChar("/");
+    setYPosition(yPosition);
+    setXPosition(xPosition+facing);
+  }
+  if (attackTimer == 1) endAttack(); 
+  return attackTimer-1;
+}
+
+int Weapon::performLightAttack(int attackTimer, int facing, float yPosition, float xPosition) {
+  if (attackTimer == 20) beginLightAttack(facing, yPosition, xPosition);
+  if (attackTimer == 1) endAttack(); 
+  return attackTimer-1;
 }
