@@ -1,6 +1,7 @@
 #ifndef MYCHARACTER
 #define MYCHARACTER
 #include "gravityObject.hpp"
+#include "weapon.hpp"
 #include <iostream>
 
 namespace terminalGame {
@@ -9,11 +10,14 @@ namespace terminalGame {
     protected:
       int _facing;
       std::string _secondaryDrawChar; // Facing right
+      Weapon* _equippedWeapon;
 
     public:
       // CONSTRUCTORS //
       Character();
-      Character(const float, const float, const std::string, const std::string, const int, const float elasticity=0.0, const int shape=SPHERE);
+      Character(const float y, const float x, const std::string leftDrawChar, 
+        const std::string rightDrawChar, const int facing, 
+        const float elasticity=0.0, const int shape=SPHERE);
       Character(const Character&);
       Character(Character&&);
 
@@ -27,6 +31,9 @@ namespace terminalGame {
       // FUNCTIONS //
       virtual int getFacing() const;
       virtual void setFacing(const int);
+      virtual Weapon* getEquippedWeapon() const;
+      virtual void drop(GravityObject*);
+      virtual void equip(Weapon*);
 
       virtual std::string getDrawChar() const; // Overloading
   };
