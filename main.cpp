@@ -13,6 +13,7 @@
 #include "utils/physics.h"
 #include "block.hpp"
 #include "character.hpp"
+#include "weapon.hpp"
 
 using namespace terminalGame;
 
@@ -28,6 +29,10 @@ Block* _level[HEIGHT][WIDTH];
 
 std::vector<Character*> _characterVector;
 Character* _player;
+
+std::vector<Weapon*> _weaponVector;
+
+std::vector<GravityObject*> _gravityObjectVector;
 
 bool atRest(Character* character) {
   int y = int(character->getYPosition());
@@ -81,13 +86,9 @@ void akey(Character* character) {
   character->setAcceleration(10, UP);
 }
 
-void skey(Character* character) { // Heavy attack
-  if (_heavyAttackTimer == 0 && _lightAttackTimer == 0) _heavyAttackTimer = 70;
-}
+void skey(Character* character) { character->heavyAttack(); }
 
-void dkey(Character* character) { // Light attack
-  if(_heavyAttackTimer == 0 && _lightAttackTimer == 0) _lightAttackTimer = 20;
-}
+void dkey(Character* character) { character->lightAttack(); }
 
 void keyboardControl(int inputKey) {
   switch (inputKey) {
@@ -117,13 +118,6 @@ void keyboardControl(int inputKey) {
   }
 }
 
-void attack(Character* character) {
-  if (_heavyAttackTimer > 0)
-    _heavyAttackTimer = performHeavyAttack(_heavyAttackTimer, character->getFacing(), character->getYPosition(), character->getXPosition());
-  if (_lightAttackTimer > 0)
-    _lightAttackTimer = performLightAttack(_lightAttackTimer, character->getFacing(), character->getYPosition(), character->getXPosition());
-}
-
 void loadLevel() {
   std::ifstream infile("levels/level1");
   std::string line;
@@ -141,41 +135,43 @@ void loadLevel() {
   infile.close();
 }
 
-void collisionDetect(Character* character) {
-  int y = int(character->getYPosition());
-  int x = int(character->getXPosition());
-  float yVelocity = character->getYVelocity();
-  float xVelocity = character->getXVelocity();
-  float elasticity = character->getElasticity();
-  if (y == HEIGHT) character->setYPosition(HEIGHT); // Temporary solutions to avoid falling out of bounds
-  if (x == WIDTH) character->setXPosition(WIDTH); // -||-
+void collisionDetect(GravityObject* object) {
+  int y = int(object->getYPosition());
+  int x = int(object->getXPosition());
+  float yVelocity = object->getYVelocity();
+  float xVelocity = object->getXVelocity();
+  float elasticity = object->getElasticity();
+  if (y == HEIGHT) object->setYPosition(HEIGHT); // Temporary solutions to avoid falling out of bounds
+  if (x == WIDTH) object->setXPosition(WIDTH); // -||-
   // Check if a block is below
   Block* block = _level[y+BELOW][x];
   if (block != 0 && !block->isPassableFromAbove() && yVelocity > 0) {
-    character->setYPosition(y + 0.1);
-    character->setYVelocity(bounce(yVelocity, elasticity));
+    object->setYPosition(y + 0.1);
+    object->setYVelocity(bounce(yVelocity, elasticity));
   }
   // Check if a block is above
   block = _level[y+ABOVE][x];
   if (block != 0 && !block->isPassableFromBelow() && yVelocity < 0) {
-    character->setYVelocity(bounce(yVelocity, elasticity));
+    object->setYVelocity(bounce(yVelocity, elasticity));
   }
   // Check if a block is to the right
   block = _level[y][x+RIGHT];
   if (block != 0 && !block->isPassableFromLeft() && xVelocity > 0) {
-    character->setXPosition(x+0.8);
-    character->setXVelocity(bounce(xVelocity, elasticity));
+    object->setXPosition(x+0.8);
+    object->setXVelocity(bounce(xVelocity, elasticity));
   }
   // Check if a block is to the left
   block = _level[y][x+LEFT];
   if (block != 0 && !block->isPassableFromRight() && xVelocity < 0) {
-    character->setXPosition(x+0.2);
-    character->setXVelocity(bounce(xVelocity, elasticity));
+    object->setXPosition(x+0.2);
+    object->setXVelocity(bounce(xVelocity, elasticity));
   }
 }
 
 void teardown() {
   for (auto &it : _levelVector) delete it;
+  for (auto &it : _characterVector) delete it;
+  for (auto &it : _weaponVector) delete it;
 }
 
 int main(int argc, char *argv[]) {
@@ -191,12 +187,17 @@ int main(int argc, char *argv[]) {
 
   _player = new Character(10, 10, "<", ">", RIGHT);
   _characterVector.push_back(_player);
-  
+  _gravityObjectVector.push_back(_player);
+
+  Weapon* weapon = new Weapon(10, 4, 4, "/");
+  _weaponVector.push_back(weapon);
+  _gravityObjectVector.push_back(weapon);
+  //_player->equip(weapon);
+
   while(run) {
     clear();
-    draw(_levelVector, _characterVector);
+    draw(_levelVector, _characterVector, _weaponVector);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
-    attack(_player);
     timeout(10);
     inputKey = getch();
     keyboardControl(inputKey);
@@ -205,17 +206,18 @@ int main(int argc, char *argv[]) {
     usleep(2000);
 
     // Objects affected by gravity should have individual terminal velocities
-    _player->setYVelocity(newVelocity(_player->getYVelocity(), _player->getYAcceleration(), _player->getTerminalVelocity(), true));
-    _player->setXVelocity(newVelocity(_player->getXVelocity(), _player->getXAcceleration(), _player->getTerminalVelocity()));
-    _player->setYPosition(newPosition(_player->getYPosition(), _player->getYVelocity()));
-    _player->setXPosition(newPosition(_player->getXPosition(), _player->getXVelocity()));
+    for (auto &it : _gravityObjectVector) {
+      it->setYVelocity(newVelocity(it->getYVelocity(), it->getYAcceleration(), it->getTerminalVelocity(), true));
+      it->setXVelocity(newVelocity(it->getXVelocity(), it->getXAcceleration(), it->getTerminalVelocity()));
+      it->setYPosition(newPosition(it->getYPosition(), it->getYVelocity()));
+      it->setXPosition(newPosition(it->getXPosition(), it->getXVelocity()));
+      collisionDetect(it);
+    }
 
-    collisionDetect(_player);
 
     time += _timestep; 
     if (inputKey == 50) break;
   }
-  std::cout << "Goodbye5" << std::endl;
   teardown();
   endwin();
 }
