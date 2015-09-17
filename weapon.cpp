@@ -80,6 +80,7 @@ Weapon::~Weapon() {
 // FUNCTIONS //
 int Weapon::getDamageValue() const { return _damageValue; }
 int Weapon::getTime() const { return _timer; }
+bool Weapon::getEquipped() const { return _equipped; }
 
 void Weapon::setDamageValue(const int damageValue) {
   _oldDamageValue = _damageValue;

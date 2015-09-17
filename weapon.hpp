@@ -29,6 +29,7 @@ namespace terminalGame {
       // FUNCTIONS //
       int getDamageValue() const;
       int getTime() const;
+      bool getEquipped() const;
 
       void setDamageValue(const int);
       void setTempDamageValue(const int damageValue, const int time);

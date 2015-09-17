@@ -1,4 +1,5 @@
 #include "character.hpp"
+#include "weapon.hpp"
 #include "utils/constants.h"
 
 using namespace terminalGame;
@@ -68,19 +69,9 @@ Character::~Character() {
 }
 
 // FUNCTIONS //
-int Character::getFacing() const {
-  return _facing;
-}
-
-void Character::setFacing(const int facing) {
-  _facing = facing;
-}
-
-std::string Character::getDrawChar() const {
-  if (_facing == LEFT) return _drawChar;
-  if (_facing == RIGHT) return _secondaryDrawChar;
-  return NULL; // Should never happen, but if it does this should help identify it
-}
+int Character::getFacing() const { return _facing; }
+void Character::setFacing(const int facing) { _facing = facing; }
+Weapon* Character::getEquippedWeapon() const { return _equippedWeapon; }
 
 void Character::drop(GravityObject* object) {
   object->setYPosition(_yPosition+ABOVE);
@@ -93,4 +84,10 @@ void Character::equip(Weapon* weapon) {
   drop(_equippedWeapon);
   weapon->setEquipped(true);
   _equippedWeapon = weapon;
+}
+
+std::string Character::getDrawChar() const {
+  if (_facing == LEFT) return _drawChar;
+  if (_facing == RIGHT) return _secondaryDrawChar;
+  return NULL; // Should never happen, but if it does this should help identify it
 }
