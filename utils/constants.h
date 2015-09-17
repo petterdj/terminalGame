@@ -18,6 +18,7 @@ const int WIDTH = 81;
 
 // Choice aliases
 const int SPHERE = 0;
+const int RECTANGLE = 1;
 
 // Physics constants
 const bool GRAVITY = true;
@@ -26,6 +27,7 @@ const float G = 9.8;
 const float PI = 3.14;
 const float AIRDENSITY = 1.225; // Air at 15deg C at sea level
 const float SPHEREDRAGCOEFFICIENT = 0.47; // Drag coefficient for a sphere
+const float RECTANGLEDRAGCOEFFICIENT = 1.28; // -||- rectangle
 const float MOVEMENTACCELERATION = 100;
 const float DECELERATIONRIGHT = 5;
 const float DECELERATIONLEFT = -5;
