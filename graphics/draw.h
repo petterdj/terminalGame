@@ -14,9 +14,21 @@ void drawLevel(std::vector<Block*> levelVector) {
   for (auto &it : levelVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
 }
 
-inline void draw(std::vector<Block*> levelVector, std::vector<Character*> characterVector) {
+void drawWeapons(std::vector<Weapon*> weaponVector) {
+  for (auto &it : weaponVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
+}
+
+// TODO convert this into a template function instead of having several near identical functions
+void drawObjects(std::vector<Object*> objectVector) {
+  for (auto &it : objectVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
+}
+
+inline void draw(std::vector<Block*> levelVector, 
+    std::vector<Character*> characterVector,
+    std::vector<Weapon*> weaponVector) {
   drawCharacters(characterVector);
   drawLevel(levelVector);
+  drawWeapons(weaponVector);
 }
 
 #endif
