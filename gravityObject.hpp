@@ -42,6 +42,7 @@ namespace terminalGame {
       void setYVelocity(const float);
       void setXVelocity(const float);
       int setAcceleration(float, int direction=UP);
+      virtual void countDownTimers() = 0;
   };
 }
 
