@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
   Weapon* weapon = new Weapon(10, 4, 4, "/");
   _weaponVector.push_back(weapon);
   _gravityObjectVector.push_back(weapon);
-  //_player->equip(weapon);
+  _player->equip(weapon);
 
   while(run) {
     clear();
@@ -213,7 +213,6 @@ int main(int argc, char *argv[]) {
       it->setXPosition(newPosition(it->getXPosition(), it->getXVelocity()));
       collisionDetect(it);
     }
-
 
     time += _timestep; 
     if (inputKey == 50) break;

@@ -90,14 +90,18 @@ void Character::setFacing(const int facing) { _facing = facing; }
 Weapon* Character::getEquippedWeapon() const { return _equippedWeapon; }
 
 void Character::drop(GravityObject* object) {
+  if (object == nullptr) return;
   object->setYPosition(_yPosition+ABOVE);
   object->setXPosition(_xPosition-_facing);
   object->setXVelocity(5);
 }
 
 void Character::equip(Weapon* weapon) {
-  _equippedWeapon->setEquipped(false);
-  drop(_equippedWeapon);
+  if (weapon == nullptr) return;
+  if (_equippedWeapon != nullptr) {
+    _equippedWeapon->setEquipped(false);
+    drop(_equippedWeapon);
+  }
   weapon->setEquipped(true);
   _equippedWeapon = weapon;
 }
