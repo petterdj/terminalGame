@@ -99,7 +99,7 @@ void Character::drop(GravityObject* object) {
 void Character::equip(Weapon* weapon) {
   if (weapon == nullptr) return;
   if (_equippedWeapon != nullptr) {
-    _equippedWeapon->setEquipped(false);
+    _equippedWeapon->setEquipped(false, _yPosition, _xPosition);
     drop(_equippedWeapon);
   }
   weapon->setEquipped(true);
@@ -115,7 +115,7 @@ std::string Character::getDrawChar() const {
 void Character::heavyAttack() {
   if (_equippedWeapon == nullptr) return;
   if (_lightAttackTimer > 0) _lightAttackTimer = 0;
-  if (_heavyAttackTimer > 0) _heavyAttackTimer = _equippedWeapon->performHeavyAttack(_heavyAttackTimer, _facing,
+  if (_heavyAttackTimer > 0) _equippedWeapon->performHeavyAttack(_heavyAttackTimer, _facing,
     _yPosition, _xPosition);
   else _heavyAttackTimer = 70;
 }
@@ -123,7 +123,19 @@ void Character::heavyAttack() {
 void Character::lightAttack() {
   if (_heavyAttackTimer > 0 || _equippedWeapon == nullptr) return;
   if (_lightAttackTimer > 0)
-    _lightAttackTimer = _equippedWeapon->performLightAttack(_lightAttackTimer, _facing,
+    _equippedWeapon->performLightAttack(_lightAttackTimer, _facing,
       _yPosition, _xPosition);
   else _lightAttackTimer = 20;
+}
+
+void Character::countDownTimers() {
+  if (_heavyAttackTimer > 0) { heavyAttack(); _heavyAttackTimer--; }
+  if (_lightAttackTimer > 0) { lightAttack(); _lightAttackTimer--; }
+}
+
+void Character::move(int direction) {
+  if (_heavyAttackTimer == 0) {
+    setAcceleration(MOVEMENTACCELERATION, direction);
+    setFacing(direction);
+  }
 }

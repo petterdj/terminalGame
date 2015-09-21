@@ -40,6 +40,8 @@ namespace terminalGame {
       virtual std::string getDrawChar() const; // Overloading
       virtual void heavyAttack();
       virtual void lightAttack();
+      virtual void countDownTimers(); // Overloading
+      virtual void move(int direction);
   };
 }
 #endif

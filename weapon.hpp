@@ -36,15 +36,15 @@ namespace terminalGame {
       void setDamageValue(const int);
       void setTempDamageValue(const int damageValue, const int time);
       void restoreDamageValue();
-      void countDown();
+      void countDownTimers(); // Overloading
       void setTimer(const int);
-      void setEquipped(const bool);
+      void setEquipped(const bool, const float y=-1, const float x=-1);
       void setHazardous(const bool);
 
       void beginLightAttack(int facing, float y, float x);
       void endAttack();
-      int performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition);
-      int performLightAttack(int attackTimer, int facing, float yPosition, float xPosition);
+      void performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition);
+      void performLightAttack(int attackTimer, int facing, float yPosition, float xPosition);
   };
 }
 

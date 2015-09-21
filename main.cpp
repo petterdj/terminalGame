@@ -21,9 +21,6 @@ float _timestep = 0.01;
 
 int _directionKeyTimer = 0;
 
-int _heavyAttackTimer = 0;
-int _lightAttackTimer = 0;
-
 std::vector<Block*> _levelVector;
 Block* _level[HEIGHT][WIDTH];
 
@@ -53,19 +50,13 @@ void downkey(Character* character) {
 }
 
 void rightkey(Character* character) {
-  if (_heavyAttackTimer == 0) {
-    _directionKeyTimer = 5;
-    character->setAcceleration(MOVEMENTACCELERATION, RIGHT);
-    character->setFacing(RIGHT);
-  }
+  character->move(RIGHT);
+  _directionKeyTimer = 5;
 }
 
 void leftkey(Character* character) {
-  if (_heavyAttackTimer == 0) {
-    _directionKeyTimer = 5;
-    character->setAcceleration(MOVEMENTACCELERATION, LEFT);
-    character->setFacing(LEFT);
-  }
+  character->move(LEFT);
+  _directionKeyTimer = 5;
 }
 
 void nokey(Character* character) {
@@ -212,6 +203,7 @@ int main(int argc, char *argv[]) {
       it->setYPosition(newPosition(it->getYPosition(), it->getYVelocity()));
       it->setXPosition(newPosition(it->getXPosition(), it->getXVelocity()));
       collisionDetect(it);
+      it->countDownTimers();
     }
 
     time += _timestep; 

@@ -97,7 +97,7 @@ void Weapon::restoreDamageValue() {
   _damageValue = _oldDamageValue;
 }
 
-void Weapon::countDown() {
+void Weapon::countDownTimers() {
   if (_timer > 0) {
     _timer--;
     if ( _timer == 0) restoreDamageValue();
@@ -109,7 +109,13 @@ void Weapon::setTimer(const int timerValue) {
   _timer = timerValue;
 }
 
-void Weapon::setEquipped(const bool equipValue) { _equipped = equipValue; }
+void Weapon::setEquipped(const bool equipValue, const float y, const float x) {
+  _equipped = equipValue;
+  if (equipValue == false) setDrawChar("/");
+  else setDrawChar("");
+  setYPosition(y);
+  setXPosition(x);
+}
 void Weapon::setHazardous(const bool hazardous) { _hazardous = hazardous; }
 
 void Weapon::beginLightAttack(int facing, float y, float x) { 
@@ -126,35 +132,33 @@ void Weapon::endAttack() {
   setXPosition(-1);
 }
 
-int Weapon::performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition) {       
-  if (attackTimer == 70) {
+void Weapon::performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition) {       
+  if (attackTimer > 60) {
     setHazardous(true);
     setDrawChar("|");
     setYPosition(yPosition+ABOVE);
     setXPosition(xPosition);
   }
-  if (attackTimer == 60) {
+  else if (attackTimer > 45) {
     if (facing == RIGHT) setDrawChar("/");
     else setDrawChar("\\");
     setYPosition(yPosition+ABOVE);
     setXPosition(xPosition);
   }
-  if(attackTimer == 45) { // Frame 2
+  else if(attackTimer > 35) { // Frame 2
     setYPosition(yPosition+ABOVE);
     setXPosition(xPosition+facing);
   }
-  if (attackTimer == 35) {
+  else if (attackTimer > 1) {
     if (facing == RIGHT) setDrawChar("\\");
     else setDrawChar("/");
     setYPosition(yPosition);
     setXPosition(xPosition+facing);
   }
   if (attackTimer == 1) endAttack(); 
-  return attackTimer-1;
 }
 
-int Weapon::performLightAttack(int attackTimer, int facing, float yPosition, float xPosition) {
-  if (attackTimer == 20) beginLightAttack(facing, yPosition, xPosition);
+void Weapon::performLightAttack(int attackTimer, int facing, float yPosition, float xPosition) {
+  if (attackTimer > 1) beginLightAttack(facing, yPosition, xPosition);
   if (attackTimer == 1) endAttack(); 
-  return attackTimer-1;
 }
