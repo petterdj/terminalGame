@@ -104,12 +104,12 @@ void loadLevel() {
   while (std::getline(infile, line)) {
     for (int x = 0; (size_t) x < line.length(); ++x) {
       Block* block = nullptr;
-      if (line[x] == '#') {
+      if (line[x] == '#') { // Normal impassable block
         block = new Block((int) y, (int) x); 
-      } else if (line[x] == '-') {
+      } else if (line[x] == '-') { // Platform block
         block = new Block((int) y, (int) x, "-");
         block->setPlatformPassable();
-      } else if (line[x] == '=') {
+      } else if (line[x] == '=') { // Block that is impassable except on down arrow
         block = new Block(y, x, "=", true);
       }
       if (block != nullptr) _levelVector.push_back(block);
