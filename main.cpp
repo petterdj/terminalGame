@@ -31,23 +31,8 @@ std::vector<Weapon*> _weaponVector;
 
 std::vector<GravityObject*> _gravityObjectVector;
 
-bool atRest(Character* character) {
-  int y = int(character->getYPosition());
-  int x = int(character->getXPosition());
-  Block* block = _level[y+1][x];
-  if (block == 0 || (block != 0 && block->isPassableFromAbove())) return false;
-  return true;
-}
-
-void upkey(Character* character) {
-  if (atRest(character)) {
-    character->setAcceleration(1000, UP);
-  }
-}
-
-void downkey(Character* character) {
-  // Nothing yet
-}
+void upkey(Character* character) { if (!character->inAir()) character->jump(); } // TODO Do something else with up-key
+void downkey(Character* character) { /*TODO Nothing yet*/ }
 
 void rightkey(Character* character) {
   character->move(RIGHT);
@@ -73,12 +58,8 @@ void nokey(Character* character) {
   } else _directionKeyTimer--;
 }
 
-void akey(Character* character) {
-  character->setAcceleration(10, UP);
-}
-
+void akey(Character* character) { if (!character->inAir()) character->jump(); }
 void skey(Character* character) { character->heavyAttack(); }
-
 void dkey(Character* character) { character->lightAttack(); }
 
 void keyboardControl(int inputKey) {
@@ -132,11 +113,14 @@ void collisionDetect(GravityObject* object) {
   float yVelocity = object->getYVelocity();
   float xVelocity = object->getXVelocity();
   float elasticity = object->getElasticity();
-  if (y == HEIGHT) object->setYPosition(HEIGHT); // Temporary solutions to avoid falling out of bounds
+  bool inAir = true;
+  if (y == HEIGHT) object->setYPosition(HEIGHT); // TODO Temporary solutions to avoid falling out of bounds
   if (x == WIDTH) object->setXPosition(WIDTH); // -||-
-  // Check if a block is below
+  // Check if a block is below and at the same time set if the object is in the air or on the ground
   Block* block = _level[y+BELOW][x];
-  if (block != 0 && !block->isPassableFromAbove() && yVelocity > 0) {
+  inAir = (block == 0 || block->isPassableFromAbove());
+  object->setInAir(inAir);
+  if (!inAir && yVelocity > 0) {
     object->setYPosition(y + 0.1);
     object->setYVelocity(bounce(yVelocity, elasticity));
   }
