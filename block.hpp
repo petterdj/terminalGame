@@ -16,7 +16,7 @@ namespace terminalGame {
     public:
       // CONSTRUCTORS //
       Block();
-      Block(const int, const int, const std::string drawChar="#", const bool fromLeft=false, const bool fromRight=false, const bool fromBelow=false, const bool fromAbove=false, const bool fromAboveKeyDown=false);
+      Block(const int, const int, const std::string drawChar="#", const bool fromAboveKeyDown=false, const bool fromLeft=false, const bool fromRight=false, const bool fromBelow=false, const bool fromAbove=false);
       Block(const Block&);
       Block(Block&&);
 

@@ -12,7 +12,7 @@ Block::Block() :
   _passableFromAboveKeyDown = false;
 }
 
-Block::Block(const int y, const int x, const std::string drawChar, const bool fromLeft, const bool fromRight, const bool fromBelow, const bool fromAbove, const bool fromAboveKeyDown) : 
+Block::Block(const int y, const int x, const std::string drawChar, const bool fromAboveKeyDown, const bool fromLeft, const bool fromRight, const bool fromBelow, const bool fromAbove) : 
   Object(y, x, drawChar) {
   _passableFromLeft = fromLeft;
   _passableFromRight = fromRight;
