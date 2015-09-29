@@ -32,7 +32,14 @@ std::vector<Weapon*> _weaponVector;
 std::vector<GravityObject*> _gravityObjectVector;
 
 void upkey(Character* character) { if (!character->inAir()) character->jump(); } // TODO Do something else with up-key
-void downkey(Character* character) { /*TODO Nothing yet*/ }
+void downkey(Character* character) {
+  if (!character->inAir()) {
+    int y = character->getYPosition();
+    int x = character->getXPosition();
+    Block* block = _level[y+BELOW][x];
+    if (block != nullptr && block->isPassableFromAboveKeyDown()) character->setYPosition(y+BELOW);
+  }
+}
 
 void rightkey(Character* character) {
   character->move(RIGHT);
@@ -93,14 +100,20 @@ void keyboardControl(int inputKey) {
 void loadLevel() {
   std::ifstream infile("levels/level1");
   std::string line;
-  size_t y = 0;
-  while(std::getline(infile, line)) {
-    for (size_t x = 0; x < line.length(); ++x) {
-      if(line[x] == '#') {
-        Block* block = new Block((int) y, (int) x); 
-        _levelVector.push_back(block);
-        _level[y][x] = block;
+  int y = 0;
+  while (std::getline(infile, line)) {
+    for (int x = 0; (size_t) x < line.length(); ++x) {
+      Block* block = nullptr;
+      if (line[x] == '#') {
+        block = new Block((int) y, (int) x); 
+      } else if (line[x] == '-') {
+        block = new Block((int) y, (int) x, "-");
+        block->setPlatformPassable();
+      } else if (line[x] == '=') {
+        block = new Block(y, x, "=", true);
       }
+      if (block != nullptr) _levelVector.push_back(block);
+      _level[y][x] = block;
     }
     ++y;
   }
@@ -118,7 +131,7 @@ void collisionDetect(GravityObject* object) {
   if (x == WIDTH) object->setXPosition(WIDTH); // -||-
   // Check if a block is below and at the same time set if the object is in the air or on the ground
   Block* block = _level[y+BELOW][x];
-  inAir = (block == 0 || block->isPassableFromAbove());
+  inAir = (block == nullptr || block->isPassableFromAbove());
   object->setInAir(inAir);
   if (!inAir && yVelocity > 0) {
     object->setYPosition(y + 0.1);
@@ -126,18 +139,18 @@ void collisionDetect(GravityObject* object) {
   }
   // Check if a block is above
   block = _level[y+ABOVE][x];
-  if (block != 0 && !block->isPassableFromBelow() && yVelocity < 0) {
+  if (block != nullptr && !block->isPassableFromBelow() && yVelocity < 0) {
     object->setYVelocity(bounce(yVelocity, elasticity));
   }
   // Check if a block is to the right
   block = _level[y][x+RIGHT];
-  if (block != 0 && !block->isPassableFromLeft() && xVelocity > 0) {
+  if (block != nullptr && !block->isPassableFromLeft() && xVelocity > 0) {
     object->setXPosition(x+0.8);
     object->setXVelocity(bounce(xVelocity, elasticity));
   }
   // Check if a block is to the left
   block = _level[y][x+LEFT];
-  if (block != 0 && !block->isPassableFromRight() && xVelocity < 0) {
+  if (block != nullptr && !block->isPassableFromRight() && xVelocity < 0) {
     object->setXPosition(x+0.2);
     object->setXVelocity(bounce(xVelocity, elasticity));
   }
