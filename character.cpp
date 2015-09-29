@@ -116,7 +116,7 @@ void Character::heavyAttack() {
   if (_equippedWeapon == nullptr) return;
   if (_lightAttackTimer > 0) _lightAttackTimer = 0;
   if (_heavyAttackTimer > 0) _equippedWeapon->performHeavyAttack(_heavyAttackTimer, _facing,
-    _yPosition, _xPosition);
+    _yPosition, _xPosition, _inAir);
   else _heavyAttackTimer = 70;
 }
 
@@ -129,7 +129,10 @@ void Character::lightAttack() {
 }
 
 void Character::countDownTimers() {
-  if (_heavyAttackTimer > 0) { heavyAttack(); _heavyAttackTimer--; }
+  if (_heavyAttackTimer > 0) { 
+    heavyAttack(); _heavyAttackTimer--;
+    if (_heavyAttackTimer < 35 && inAir()) _heavyAttackTimer = 35;
+  }
   if (_lightAttackTimer > 0) { lightAttack(); _lightAttackTimer--; }
 }
 
@@ -137,5 +140,10 @@ void Character::move(int direction) {
   if (_heavyAttackTimer == 0) {
     setAcceleration(MOVEMENTACCELERATION, direction);
     setFacing(direction);
+
   }
+}
+
+void Character::jump() {
+  if (!inAir()) setAcceleration(1000, UP);
 }

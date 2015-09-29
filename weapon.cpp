@@ -132,7 +132,7 @@ void Weapon::endAttack() {
   setXPosition(-1);
 }
 
-void Weapon::performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition) {       
+void Weapon::performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition, bool inAir) {
   if (attackTimer > 60) {
     setHazardous(true);
     setDrawChar("|");
@@ -155,7 +155,7 @@ void Weapon::performHeavyAttack(int attackTimer, int facing, float yPosition, fl
     setYPosition(yPosition);
     setXPosition(xPosition+facing);
   }
-  if (attackTimer == 1) endAttack(); 
+  if (attackTimer == 1 && !inAir) endAttack(); 
 }
 
 void Weapon::performLightAttack(int attackTimer, int facing, float yPosition, float xPosition) {

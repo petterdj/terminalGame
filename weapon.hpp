@@ -43,7 +43,7 @@ namespace terminalGame {
 
       void beginLightAttack(int facing, float y, float x);
       void endAttack();
-      void performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition);
+      void performHeavyAttack(int attackTimer, int facing, float yPosition, float xPosition, bool inAir);
       void performLightAttack(int attackTimer, int facing, float yPosition, float xPosition);
   };
 }

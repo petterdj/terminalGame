@@ -42,6 +42,7 @@ namespace terminalGame {
       virtual void lightAttack();
       virtual void countDownTimers(); // Overloading
       virtual void move(int direction);
+      virtual void jump();
   };
 }
 #endif
