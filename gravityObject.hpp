@@ -13,11 +13,11 @@ namespace terminalGame {
       float _yAcceleration;
       float _xAcceleration;
       float _terminalVelocity;
-
+      bool _inAir;
     public:
       // CONSTRUCTORS //
       GravityObject();
-      GravityObject(const float, const float, const std::string, const float elasticity=0.0, const int shape=SPHERE);
+      GravityObject(const float y, const float x, const std::string drawChar, const float elasticity=0.0, const int shape=SPHERE);
       GravityObject(const GravityObject&);
       GravityObject(GravityObject&&);
      
@@ -36,12 +36,14 @@ namespace terminalGame {
       float getYAcceleration() const;
       float getXAcceleration() const;
       float getTerminalVelocity() const;
+      bool inAir() const;
 
       void setElasticity(const float);
       void setShape(const int);
       void setYVelocity(const float);
       void setXVelocity(const float);
-      int setAcceleration(float, int direction=UP);
+      int setAcceleration(const float, const int direction=UP);
+      void setInAir(const bool);
       virtual void countDownTimers() = 0;
   };
 }
