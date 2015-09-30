@@ -5,7 +5,7 @@ namespace terminalGame {
 
 class AI {
 protected:
-  float _reactionTime; // How often the AI may execute per second
+  float _reactionTime; // How often the AI may execute in the main loop
 
 public:
   // CONSTRUCTORS //
