@@ -4,6 +4,7 @@ using namespace terminalGame;
 
 // CONSTRUCTORS //
   AI::AI() {
+    _reactionTime = 1;
   }
 
   AI::AI(const AI& o) {
