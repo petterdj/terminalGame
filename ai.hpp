@@ -22,6 +22,11 @@ public:
   // DESTRUCTOR //
   ~AI();
 
+  // FUNCTIONS //
+  float getReactionTime() const;
+
+  void setReactionTime(const float);
+
 };
 }
 
