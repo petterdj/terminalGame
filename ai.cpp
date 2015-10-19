@@ -1,4 +1,5 @@
 #include "ai.hpp"
+#include <math.h>
 
 using namespace terminalGame;
 
@@ -8,7 +9,7 @@ using namespace terminalGame;
     // Vector default constructor is automatically called
   }
 
-  AI::AI(float reactionTime, std::initializer_list<Character *> controlledCharacters) {
+  AI::AI(float reactionTime, std::initializer_list<AICharacter *> controlledCharacters) {
     _reactionTime = reactionTime < 0 ? 0 : reactionTime; // Reaction time cannot be less than 0
     _controlledCharacters = controlledCharacters;
   }
@@ -45,13 +46,35 @@ using namespace terminalGame;
 
 // FUNCTIONS //
   float AI::getReactionTime() const { return _reactionTime; }
-  std::vector<Character *> AI::getControlledCharacters() const { return _controlledCharacters; }
+  std::vector<AICharacter *> AI::getControlledCharacters() const { return _controlledCharacters; }
 
   void AI::setReactionTime(const float reactionTime) { _reactionTime = reactionTime < 0 ? 0 : reactionTime; }
-  void AI::setControlledCharacterList(const std::initializer_list<Character *> cList) { _controlledCharacters = cList; }
-  void AI::addControlledCharacter(Character * character) { _controlledCharacters.push_back(character); }
+  void AI::setControlledCharacterList(const std::initializer_list<AICharacter *> cList) { _controlledCharacters = cList; }
+  void AI::addControlledCharacter(AICharacter * character) { _controlledCharacters.push_back(character); }
 
-  void AI::attack(const Character* opponent) {
+  void AI::control() {
+    for (auto &c : _controlledCharacters) {
+      if (playerInCharacterAggroRange(c)) {
+        c->setPath(findPathForCharacterToPlayer(c));
+      }
     }
+  }
 
+  bool AI::playerInCharacterAggroRange(const AICharacter* c) const {
+    float characterY = c->getYPosition();
+    float characterX = c->getXPosition();
+    float playerY = 10; // Placeholder
+    float playerX = 10; // Placeholder
+    
+    float dY = characterY - playerY;
+    float dX = characterX - playerX;
+    float distance = sqrt(pow(dY, 2.0) + pow(dX, 2.0));
+
+    return distance < c->getAggroThreshold();
+  }
+
+  Path AI::findPathForCharacterToPlayer(const AICharacter * c) const {
+    Path p;
+    return p;
+  }
 

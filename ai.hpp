@@ -2,18 +2,20 @@
 #define MYAI
 #include <vector>
 #include <initializer_list>
-#include "character.hpp"
+#include "aiCharacter.hpp"
+#include "path.hpp"
+
 namespace terminalGame {
 
 class AI {
 protected:
   float _reactionTime; // How often the AI may execute in the main loop
-  std::vector<Character *> _controlledCharacters;
+  std::vector<AICharacter *> _controlledCharacters;
 
 public:
   // CONSTRUCTORS //
   AI();
-  AI(float reactionTime, const std::initializer_list<Character *>);
+  AI(float reactionTime, const std::initializer_list<AICharacter *>);
 
   AI(const AI&);
   AI(AI&&);
@@ -27,14 +29,15 @@ public:
 
   // FUNCTIONS //
   float getReactionTime() const;
-  std::vector<Character *> getControlledCharacters() const;
+  std::vector<AICharacter *> getControlledCharacters() const;
 
   void setReactionTime(const float);
-  void setControlledCharacterList(const std::initializer_list<Character *>);
-  void addControlledCharacter(Character *);
+  void setControlledCharacterList(const std::initializer_list<AICharacter *>);
+  void addControlledCharacter(AICharacter *);
 
-  void attack(const Character*);
-
+  void control();
+  bool playerInCharacterAggroRange(const AICharacter *) const;
+  Path findPathForCharacterToPlayer(const AICharacter *) const;
 };
 }
 
