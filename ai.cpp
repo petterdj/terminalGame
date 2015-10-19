@@ -5,10 +5,12 @@ using namespace terminalGame;
 // CONSTRUCTORS //
   AI::AI() {
     _reactionTime = 1;
+    // Vector default constructor is automatically called
   }
 
-  AI::AI(float reactionTime) {
-    _reactionTime = reactionTime < 0 ? 0 : reactionTime;
+  AI::AI(float reactionTime, std::initializer_list<Character *> controlledCharacters) {
+    _reactionTime = reactionTime < 0 ? 0 : reactionTime; // Reaction time cannot be less than 0
+    _controlledCharacters = controlledCharacters;
   }
 
   AI::AI(const AI& o) {
@@ -43,8 +45,13 @@ using namespace terminalGame;
 
 // FUNCTIONS //
   float AI::getReactionTime() const { return _reactionTime; }
+  std::vector<Character *> AI::getControlledCharacters() const { return _controlledCharacters; }
 
   void AI::setReactionTime(const float reactionTime) { _reactionTime = reactionTime < 0 ? 0 : reactionTime; }
+  void AI::setControlledCharacterList(const std::initializer_list<Character *> cList) { _controlledCharacters = cList; }
+  void AI::addControlledCharacter(Character * character) { _controlledCharacters.push_back(character); }
 
-  
+  void AI::attack(const Character* opponent) {
+    }
+
 

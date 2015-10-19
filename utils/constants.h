@@ -31,4 +31,8 @@ const float RECTANGLEDRAGCOEFFICIENT = 1.28; // -||- rectangle
 const float MOVEMENTACCELERATION = 100;
 const float DECELERATIONRIGHT = 5;
 const float DECELERATIONLEFT = -5;
+
+// AI constants
+const int ATTACK = 0;
+const int SURVIVE = 1;
 #endif
