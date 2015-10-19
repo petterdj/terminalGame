@@ -5,8 +5,8 @@ LDFLAGS=-lncurses
 default: game
 #	chmod +x main.o
 
-game: main.o object.o character.o block.o gravityObject.o weapon.o aiCharacter.o ai.o
-	$(CC) $(CFLAGS) -o game main.o object.o character.o block.o gravityObject.o weapon.o $(LDFLAGS)
+game: main.o object.o character.o block.o gravityObject.o weapon.o ai.o
+	$(CC) $(CFLAGS) -o game main.o object.o character.o block.o gravityObject.o weapon.o ai.o $(LDFLAGS)
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) -c -o main.o main.cpp 
@@ -25,9 +25,6 @@ gravityObject.o: gravityObject.cpp
 
 weapon.o: weapon.cpp
 	$(CC) $(CFLAGS) -c -o weapon.o weapon.cpp
-
-aiCharacter.o: aiCharacter.cpp
-	$(CC) $(CFLAGS) -c -o aiCharacter.o aiCharacter.cpp
 
 ai.o: ai.cpp
 	$(CC) $(CFLAGS) -c -o ai.o ai.cpp
