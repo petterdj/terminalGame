@@ -26,8 +26,8 @@ gravityObject.o: gravityObject.cpp
 weapon.o: weapon.cpp
 	$(CC) $(CFLAGS) -c -o weapon.o weapon.cpp
 
-ai.o: ai.cpp
-	$(CC) $(CFLAGS) -c -o ai.o ai.cpp
+ai.o: ./ai/ai.cpp
+	$(CC) $(CFLAGS) -c -o ai.o ./ai/ai.cpp
 
 aiCharacter.o: aiCharacter.cpp
 	$(CC) $(CFLAGS) -c -o aiCharacter.o aiCharacter.cpp

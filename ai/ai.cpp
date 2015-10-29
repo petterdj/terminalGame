@@ -2,8 +2,7 @@
 #define MYAI
 #include <vector>
 #include <initializer_list>
-#include "aiCharacter.hpp"
-#include "path.hpp"
+#include "../aiCharacter.hpp"
 
 namespace terminalGame {
 
@@ -37,7 +36,6 @@ public:
 
   void control();
   bool playerInCharacterAggroRange(const AICharacter *) const;
-  Path findPathForCharacterToPlayer(const AICharacter *) const;
 };
 }
 
