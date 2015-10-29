@@ -3,6 +3,7 @@
 #include <vector>
 #include <initializer_list>
 #include "../aiCharacter.hpp"
+#include "aStar.hpp"
 
 namespace terminalGame {
 
@@ -10,6 +11,7 @@ class AI {
 protected:
   float _reactionTime; // How often the AI may execute in the main loop
   std::vector<AICharacter *> _controlledCharacters;
+  AStar _pathfinder;
 
 public:
   // CONSTRUCTORS //
