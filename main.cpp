@@ -6,11 +6,12 @@
 #include <fstream>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
-#include <boost/tuple/tuple.hpp>
 #include "graphics/animations.h"
 #include "graphics/draw.h"
 #include "utils/constants.h"
 #include "utils/physics.h"
+#include "ai/aStar.hpp"
+#include "level.hpp"
 #include "block.hpp"
 #include "character.hpp"
 #include "weapon.hpp"
@@ -21,8 +22,9 @@ float _timestep = 0.01;
 
 int _directionKeyTimer = 0;
 
-std::vector<Block*> _levelVector;
-Block* _level[HEIGHT][WIDTH];
+Level* _level;
+
+AStar* _aStar;
 
 std::vector<Character*> _characterVector;
 Character* _player;
@@ -36,7 +38,7 @@ void downkey(Character* character) {
   if (!character->inAir()) {
     int y = character->getYPosition();
     int x = character->getXPosition();
-    Block* block = _level[y+BELOW][x];
+    Block* block = _level->getBlockAtPosition(y+BELOW, x);
     if (block != nullptr && block->isPassableFromAboveKeyDown()) character->setYPosition(y+BELOW);
   }
 }
@@ -97,28 +99,6 @@ void keyboardControl(int inputKey) {
   }
 }
 
-void loadLevel() {
-  std::ifstream infile("levels/level1");
-  std::string line;
-  int y = 0;
-  while (std::getline(infile, line)) {
-    for (int x = 0; (size_t) x < line.length(); ++x) {
-      Block* block = nullptr;
-      if (line[x] == '#') { // Normal impassable block
-        block = new Block((int) y, (int) x); 
-      } else if (line[x] == '-') { // Platform block
-        block = new Block((int) y, (int) x, "-");
-        block->setPlatformPassable();
-      } else if (line[x] == '=') { // Block that is impassable except on down arrow
-        block = new Block(y, x, "=", true);
-      }
-      if (block != nullptr) _levelVector.push_back(block);
-      _level[y][x] = block;
-    }
-    ++y;
-  }
-  infile.close();
-}
 
 void collisionDetect(GravityObject* object) {
   int y = int(object->getYPosition());
@@ -130,7 +110,7 @@ void collisionDetect(GravityObject* object) {
   if (y == HEIGHT) object->setYPosition(HEIGHT); // TODO Temporary solutions to avoid falling out of bounds
   if (x == WIDTH) object->setXPosition(WIDTH); // -||-
   // Check if a block is below and at the same time set if the object is in the air or on the ground
-  Block* block = _level[y+BELOW][x];
+  Block* block = _level->getBlockAtPosition(y+BELOW, x);
   inAir = (block == nullptr || block->isPassableFromAbove());
   object->setInAir(inAir);
   if (!inAir && yVelocity > 0) {
@@ -138,18 +118,18 @@ void collisionDetect(GravityObject* object) {
     object->setYVelocity(bounce(yVelocity, elasticity));
   }
   // Check if a block is above
-  block = _level[y+ABOVE][x];
+  block = _level->getBlockAtPosition(y+ABOVE, x);
   if (block != nullptr && !block->isPassableFromBelow() && yVelocity < 0) {
     object->setYVelocity(bounce(yVelocity, elasticity));
   }
   // Check if a block is to the right
-  block = _level[y][x+RIGHT];
+  block = _level->getBlockAtPosition(y, x+RIGHT);
   if (block != nullptr && !block->isPassableFromLeft() && xVelocity > 0) {
     object->setXPosition(x+0.8);
     object->setXVelocity(bounce(xVelocity, elasticity));
   }
   // Check if a block is to the left
-  block = _level[y][x+LEFT];
+  block = _level->getBlockAtPosition(y, x+LEFT);
   if (block != nullptr && !block->isPassableFromRight() && xVelocity < 0) {
     object->setXPosition(x+0.2);
     object->setXVelocity(bounce(xVelocity, elasticity));
@@ -157,7 +137,7 @@ void collisionDetect(GravityObject* object) {
 }
 
 void teardown() {
-  for (auto &it : _levelVector) delete it;
+  delete _level;
   for (auto &it : _characterVector) delete it;
   for (auto &it : _weaponVector) delete it;
 }
@@ -168,10 +148,7 @@ int main(int argc, char *argv[]) {
   curs_set(FALSE);
   raw();
   resize_term(HEIGHT, WIDTH);
-  loadLevel();
-  bool run = true;
-  float time = 0;
-  int inputKey = -1;
+  //_level->loadLevel("levels/level1");
 
   _player = new Character(10, 10, "<", ">", RIGHT);
   _characterVector.push_back(_player);
@@ -182,9 +159,18 @@ int main(int argc, char *argv[]) {
   _gravityObjectVector.push_back(weapon);
   _player->equip(weapon);
 
+  bool run = true;
+  float time = 0;
+  int inputKey = -1;
   while(run) {
     clear();
-    draw(_levelVector, _characterVector, _weaponVector);
+    std::cout << "111" << std::endl;
+    std::vector<Block*> lvec = _level->getLevelVector();
+    Block* a = new Block();
+    std::cout << "afsd" << std::endl;
+    lvec.push_back(a);
+    std::cout << "222" << std::endl;
+    draw(lvec, _characterVector, _weaponVector);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
     timeout(10);
     inputKey = getch();
