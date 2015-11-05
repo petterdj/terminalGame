@@ -54,5 +54,5 @@ AICharacter::~AICharacter() {
 // FUNCTIONS //
 float AICharacter::getAggroThreshold() const { return _aggroThreshold; }
 
-void AICharacter::setPath(Path p) { _path = p; }
+//void AICharacter::setPath(Path p) { _path = p; }
 

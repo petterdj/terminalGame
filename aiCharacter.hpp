@@ -1,7 +1,6 @@
 #ifndef MYAICHARACTER
 #define MYAICHARACTER
 #include "character.hpp"
-#include "path.hpp"
 #include <iostream>
 
 namespace terminalGame {
@@ -9,7 +8,7 @@ namespace terminalGame {
   class AICharacter : public Character {
     protected:
       float _aggroThreshold;
-      Path _path; // TODO Object or vector? It is basically an ordered set of instructions for reaching a specified point
+      //Path _path; // TODO Object or vector? It is basically an ordered set of instructions for reaching a specified point
 
     public:
       // CONSTRUCTORS //
@@ -31,7 +30,7 @@ namespace terminalGame {
       // FUNCTIONS //
       float getAggroThreshold() const;
       
-      void setPath(const Path);
+     // void setPath(const Path);
   };
 }
 #endif
