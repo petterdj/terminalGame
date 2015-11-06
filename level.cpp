@@ -8,6 +8,7 @@ using namespace terminalGame;
 Level::Level() {
   std::vector<Block*> v;
   _levelVector = v;
+  loadLevel("levels/nulllevel");
 }
 
 // DESTRUCTOR //
@@ -43,10 +44,10 @@ void Level::loadLevel(const std::string levelPath) {
   infile.close();
 }
 
-Block* Level::getBlockAtPosition(const int y, const int x) { return _map[y][x]; }
-
-std::vector<Block*> Level::getLevelVector() { 
-  std::cout << "get level vector" << std::endl;
-  std::cout << _levelVector.size() << std::endl;
-  return _levelVector;
+Block* Level::getBlockAtPosition(const int y, const int x) { 
+  if (y > HEIGHT || x > WIDTH) return nullptr;
+  return _map[y][x];
 }
+
+std::vector<Block*>& Level::getLevelVector() { return _levelVector; }
+

@@ -30,7 +30,7 @@ class Level {
     void loadLevel(const std::string);
 
     Block* getBlockAtPosition(const int y, const int x);
-    std::vector<Block*> getLevelVector();
+    std::vector<Block*>& getLevelVector();
 };
 }
 

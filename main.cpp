@@ -103,6 +103,7 @@ void keyboardControl(int inputKey) {
 void collisionDetect(GravityObject* object) {
   int y = int(object->getYPosition());
   int x = int(object->getXPosition());
+  if (y < 0 || y > HEIGHT || x < 0 || x > WIDTH) return;
   float yVelocity = object->getYVelocity();
   float xVelocity = object->getXVelocity();
   float elasticity = object->getElasticity();
@@ -148,7 +149,8 @@ int main(int argc, char *argv[]) {
   curs_set(FALSE);
   raw();
   resize_term(HEIGHT, WIDTH);
-  //_level->loadLevel("levels/level1");
+  _level = new Level();
+  _level->loadLevel("levels/level1");
 
   _player = new Character(10, 10, "<", ">", RIGHT);
   _characterVector.push_back(_player);
@@ -164,19 +166,12 @@ int main(int argc, char *argv[]) {
   int inputKey = -1;
   while(run) {
     clear();
-    std::cout << "111" << std::endl;
-    std::vector<Block*> lvec = _level->getLevelVector();
-    Block* a = new Block();
-    std::cout << "afsd" << std::endl;
-    lvec.push_back(a);
-    std::cout << "222" << std::endl;
-    draw(lvec, _characterVector, _weaponVector);
+    draw(_level->getLevelVector(), _characterVector, _weaponVector);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
     timeout(10);
     inputKey = getch();
     keyboardControl(inputKey);
     refresh();
-
     usleep(2000);
 
     // Objects affected by gravity should have individual terminal velocities
