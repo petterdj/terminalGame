@@ -45,7 +45,7 @@ void Level::loadLevel(const std::string levelPath) {
 }
 
 Block* Level::getBlockAtPosition(const int y, const int x) { 
-  if (y > HEIGHT || x > WIDTH) return nullptr;
+  if (y >= HEIGHT || x >= WIDTH || y < 0 || x < 0) return nullptr;
   return _map[y][x];
 }
 
