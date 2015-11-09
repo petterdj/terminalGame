@@ -18,6 +18,10 @@ void drawWeapons(std::vector<Weapon*> weaponVector) {
   for (auto &it : weaponVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
 }
 
+void drawPath(std::vector<Block*> pathVector) {
+  for (auto &it : pathVector) mvprintw(it->getYPosition(), it->getXPosition(), ".");
+}
+
 // TODO convert this into a template function instead of having several near identical functions
 void drawObjects(std::vector<Object*> objectVector) {
   for (auto &it : objectVector) mvprintw(it->getYPosition(), it->getXPosition(), it->getDrawChar().c_str());
@@ -25,10 +29,12 @@ void drawObjects(std::vector<Object*> objectVector) {
 
 inline void draw(std::vector<Block*> levelVector, 
     std::vector<Character*> characterVector,
-    std::vector<Weapon*> weaponVector) {
+    std::vector<Weapon*> weaponVector,
+    std::vector<Block*> pathVector) {
   drawCharacters(characterVector);
   drawLevel(levelVector);
   drawWeapons(weaponVector);
+  drawPath(pathVector);
 }
 
 #endif
