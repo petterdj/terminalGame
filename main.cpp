@@ -161,12 +161,18 @@ int main(int argc, char *argv[]) {
   _gravityObjectVector.push_back(weapon);
   _player->equip(weapon);
 
+  _aStar = new AStar(_level);
+  std::vector<Block*> path;
+  Block* origin = _level->getBlockAtPosition(5, 5);
+  Block* target = _level->getBlockAtPosition(15,70);
+  path = _aStar->findPath(origin, target);
+  
   bool run = true;
   float time = 0;
   int inputKey = -1;
   while(run) {
     clear();
-    draw(_level->getLevelVector(), _characterVector, _weaponVector);
+    draw(_level->getLevelVector(), _characterVector, _weaponVector, path);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
     timeout(10);
     inputKey = getch();
@@ -183,6 +189,7 @@ int main(int argc, char *argv[]) {
       collisionDetect(it);
       it->countDownTimers();
     }
+
 
     time += _timestep; 
     if (inputKey == 50) break;
