@@ -173,9 +173,7 @@ int main(int argc, char *argv[]) {
     clear();
     draw(_level->getLevelVector(), _characterVector, _weaponVector, path);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
-    mvprintw(1,2, "-");
     if (pathUpdateTimer > 99) {
-      mvprintw(1, 2, "p");
       path = _aStar->findPath(_level->getBlockAtPosition(_player->getYPosition(), _player->getXPosition()), target);
       pathUpdateTimer = 0;
     }
