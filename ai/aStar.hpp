@@ -12,12 +12,9 @@ class AStar {
 
   protected:
     Level* _map;
-    std::queue<Block*> _frontier;
-    std::set<Block*> _visited;
-    std::map<Block*, Block*> _cameFrom;
 
     // HELPERS //
-    void addNext(Block*, Block*);
+    void addNext(Block*, Block*, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*> frontier);
     int direction(Block*, Block*);
   public:
     // CONSTRUCTORS //

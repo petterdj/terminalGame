@@ -15,55 +15,31 @@ AStar::AStar(Level* map) {
 AStar::AStar(const AStar& o) {
   if (this == &o) return;
   _map = o._map;
-  _frontier = o._frontier;
-  _visited = o._visited;
-  _cameFrom = o._cameFrom;
 }
 
 AStar::AStar(AStar&& o) {
   if (this == &o) return;
   _map = o._map;
-  _frontier = o._frontier;
-  _visited = o._visited;
-  _cameFrom = o._cameFrom;
   _map = nullptr;
-  std::queue<Block*> q;
-  std::swap(o._frontier, q);
-  o._visited.clear();
-  o._cameFrom.clear();
 }
 
 // OPERATORS //
 AStar& AStar::operator=(const AStar& o) {
   if (this == &o) return *this;
   _map = o._map;
-  _frontier = o._frontier;
-  _visited = o._visited;
-  _cameFrom = o._cameFrom;
   return *this;
 }
 
 AStar& AStar::operator=(AStar&& o) {
   if (this == &o) return *this;
   _map = o._map;
-  _frontier = o._frontier;
-  _visited = o._visited;
-  _cameFrom = o._cameFrom;
   _map = nullptr;
-  std::queue<Block*> q;
-  std::swap(o._frontier, q);
-  o._visited.clear();
-  o._cameFrom.clear();
   return *this;
 }
 
 // DESTRUCTOR //
 AStar::~AStar() {
   _map = nullptr;
-  std::queue<Block*> q;
-  std::swap(_frontier, q);
-  _visited.clear();
-  _cameFrom.clear();
 }
 
 // FUNCTIONS //
@@ -80,13 +56,14 @@ int AStar::direction(Block* next, Block* current) {
   return 0;
 }
 
-void AStar::addNext(Block* next, Block* current) {
-  if (next && _visited.find(next) == _visited.end()) {
-    _visited.emplace(next);
-    _cameFrom.emplace(next, current);
+void AStar::addNext(Block* next, Block* current, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*> frontier) {
+  if (next && visited.find(next) == visited.end()) {
+    visited.emplace(next);
+    cameFrom.emplace(next, current);
    
     bool accessible = false;
     if (!next->isFullyPassable()) {
+      // If the next object is not fully passable, determine from which direction we're coming and see if it is passable from this direction
       switch(direction(next, current)) {
         case UP:
           if (next->isPassableFromBelow()) accessible = true;
@@ -103,45 +80,50 @@ void AStar::addNext(Block* next, Block* current) {
           break;
       }
     }
-    if (accessible) _frontier.push(next);
+    if (accessible) frontier.push(next);
   }
 }
 
 std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
-  _frontier.push(origin);
-  _visited.emplace(origin);
-  _cameFrom.emplace(origin, nullptr);
+  std::queue<Block*> frontier;
+  std::set<Block*> visited;
+  std::map<Block*, Block*> cameFrom;
   std::vector<Block*> path;
   Block* current;
   Block* next;
   int y;
   int x;
+  frontier.push(origin);
+  visited.emplace(origin);
+  cameFrom.emplace(origin, nullptr);
 
   if (!origin || !target) return path;
 
-  while(!_frontier.empty()) {
-    current = _frontier.front(); _frontier.pop();
+  while(!frontier.empty()) {
+    current = frontier.front(); frontier.pop();
     if (current == target) break;
     y = current->getYPosition();
     x = current->getXPosition();
 
     next = _map->getBlockAtPosition(y+ABOVE, x);
-    addNext(next, current);
+    addNext(next, current, visited, cameFrom, frontier);
     next = _map->getBlockAtPosition(y+BELOW, x);
-    addNext(next, current);
+    addNext(next, current, visited, cameFrom, frontier);
     next = _map->getBlockAtPosition(y, x+LEFT);
-    addNext(next, current);
+    addNext(next, current, visited, cameFrom, frontier);
     next = _map->getBlockAtPosition(y, x+RIGHT);
-    addNext(next, current);
+    addNext(next, current, visited, cameFrom, frontier);
   }
 
-  current = target;
-  path.push_back(current);
-  while (current != origin) {
-    current = _cameFrom[current];
+  if (visited.find(target) != visited.end()) {
+    // Only finalize the path if the target was found
+    current = target;
     path.push_back(current);
+    while (current != origin) {
+      current = cameFrom[current];
+      path.push_back(current);
+    }
+    std::reverse(path.begin(), path.end());
   }
-  std::reverse(path.begin(), path.end());
-
   return path;
 }
