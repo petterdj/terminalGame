@@ -1,6 +1,7 @@
 #ifndef MYASTAR
 #define MYASTAR
 #include <queue>
+#include <map>
 #include <set>
 #include <tuple>
 #include "../block.hpp"
@@ -11,17 +12,17 @@ class AStar {
 
   protected:
     Level* _map;
-    int _originY;
-    int _originX;
-    int _targetY;
-    int _targetX;
     std::queue<Block*> _frontier;
     std::set<Block*> _visited;
+    std::map<Block*, Block*> _cameFrom;
 
+    // HELPERS //
+    void addNext(Block*, Block*);
+    int direction(Block*, Block*);
   public:
     // CONSTRUCTORS //
     AStar();
-    AStar(Level*, int oY, int oX, int tY, int tX);
+    AStar(Level*);
     AStar(const AStar&);
     AStar(AStar&&);
 
@@ -32,9 +33,8 @@ class AStar {
     // DESTRUCTOR //
     ~AStar();
 
-    // FUNCTIONS //
-    
-
+    // FUNCTIONS //    
+    std::vector<Block*> findPath(Block*, Block*);
 };
 }
 #endif
