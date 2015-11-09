@@ -31,10 +31,10 @@ inline void draw(std::vector<Block*> levelVector,
     std::vector<Character*> characterVector,
     std::vector<Weapon*> weaponVector,
     std::vector<Block*> pathVector) {
+  drawPath(pathVector);
   drawCharacters(characterVector);
   drawLevel(levelVector);
   drawWeapons(weaponVector);
-  drawPath(pathVector);
 }
 
 #endif
