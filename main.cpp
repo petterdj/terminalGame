@@ -163,10 +163,9 @@ int main(int argc, char *argv[]) {
 
   _aStar = new AStar(_level);
   std::vector<Block*> path;
-  Block* origin = _level->getBlockAtPosition(5, 5);
-  Block* target = _level->getBlockAtPosition(15,70);
-  path = _aStar->findPath(origin, target);
-  
+  Block* target = _level->getBlockAtPosition(17,56);
+  int pathUpdateTimer = 0;
+
   bool run = true;
   float time = 0;
   int inputKey = -1;
@@ -174,6 +173,12 @@ int main(int argc, char *argv[]) {
     clear();
     draw(_level->getLevelVector(), _characterVector, _weaponVector, path);
     mvprintw(1, 1, boost::lexical_cast<std::string>(inputKey).c_str());
+    mvprintw(1,2, "-");
+    if (pathUpdateTimer > 99) {
+      mvprintw(1, 2, "p");
+      path = _aStar->findPath(_level->getBlockAtPosition(_player->getYPosition(), _player->getXPosition()), target);
+      pathUpdateTimer = 0;
+    }
     timeout(10);
     inputKey = getch();
     keyboardControl(inputKey);
@@ -190,8 +195,8 @@ int main(int argc, char *argv[]) {
       it->countDownTimers();
     }
 
-
-    time += _timestep; 
+    ++pathUpdateTimer;
+    time += _timestep;
     if (inputKey == 50) break;
   }
   teardown();
