@@ -3,19 +3,24 @@
 #include <queue>
 #include <map>
 #include <set>
-#include <tuple>
 #include "../block.hpp"
 #include "../level.hpp"
+#include "../blockComparison.hpp"
 
 namespace terminalGame {
+
+typedef std::priority_queue<Block*, std::vector<Block*>, blockComparison> blockPriorityQueue;
+
 class AStar {
 
   protected:
     Level* _map;
 
     // HELPERS //
-    void addNext(Block*, Block*, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*>& frontier);
     int direction(Block*, Block*);
+    void addNext(Block*, Block*, blockPriorityQueue& frontier, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom);
+    int distanceToTarget(Block*, Block*);
+
   public:
     // CONSTRUCTORS //
     AStar();
