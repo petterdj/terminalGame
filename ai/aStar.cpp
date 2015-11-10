@@ -56,7 +56,7 @@ int AStar::direction(Block* next, Block* current) {
   return 0;
 }
 
-void AStar::addNext(Block* next, Block* current, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*> frontier) {
+void AStar::addNext(Block* next, Block* current, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*>& frontier) {
   if (next && visited.find(next) == visited.end()) {
     visited.emplace(next);
     cameFrom.emplace(next, current);
@@ -80,7 +80,9 @@ void AStar::addNext(Block* next, Block* current, std::set<Block*>& visited, std:
           break;
       }
     }
-    if (accessible) frontier.push(next);
+    if (accessible) {
+      frontier.push(next);
+    }
   }
 }
 

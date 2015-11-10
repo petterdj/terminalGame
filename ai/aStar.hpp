@@ -14,7 +14,7 @@ class AStar {
     Level* _map;
 
     // HELPERS //
-    void addNext(Block*, Block*, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*> frontier);
+    void addNext(Block*, Block*, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::queue<Block*>& frontier);
     int direction(Block*, Block*);
   public:
     // CONSTRUCTORS //
