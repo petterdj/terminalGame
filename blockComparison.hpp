@@ -2,22 +2,18 @@
 #define MYBLOCKCOMPARISON
 #include "block.hpp"
 #include <stdlib.h>
+#include <tuple>
 
 namespace terminalGame {
 class blockComparison {
   private:
-    Block* _target;
   public:
-    blockComparison(Block* target) { _target = target; }
-    int distanceToTarget(const Block* current, const Block* target) const {
-      int cY = current->getYPosition(); int cX = current->getXPosition(); 
-      int tY = target->getYPosition(); int tX = target->getXPosition();
-    return abs(cY-tY) + abs(cX-tX);
+    blockComparison() { }
+    ~blockComparison() { }
+
+    bool operator()(const std::tuple<Block*, int> a, const std::tuple<Block*, int> b) const { 
+      return std::get<1>(a) > std::get<1>(b);
     }
-    bool operator()(const Block * a, const Block* b) const { 
-      return distanceToTarget(a, _target) > distanceToTarget(b, _target);
-    }
-    ~blockComparison() { _target = nullptr; }
 };
 }
 #endif

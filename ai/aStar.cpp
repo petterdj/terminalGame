@@ -1,5 +1,6 @@
 #include "aStar.hpp"
 #include <algorithm>
+#include <ncurses.h>
 
 using namespace terminalGame;
 
@@ -55,7 +56,18 @@ int AStar::direction(Block* next, Block* current) {
   return 0;
 }
 
-void AStar::addNext(Block* next, Block* current, blockPriorityQueue& frontier, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom) {
+int AStar::distanceToTarget(const Block* current, const Block* target) const {
+  int cY = current->getYPosition(); int cX = current->getXPosition(); 
+  int tY = target->getYPosition(); int tX = target->getXPosition();
+  return abs(cY-tY) + abs(cX-tX);
+}
+
+int AStar::costToNext(const Block* next) const {
+  return 1;
+}
+
+void AStar::addNext(Block* next, Block* current, Block* target, blockPriorityQueue& frontier, std::set<Block*>& visited, 
+                    std::map<Block*, Block*>& cameFrom, std::map<Block*, int>& costSoFar) {
   if (next && visited.find(next) == visited.end()) {
     visited.emplace(next);
    
@@ -79,17 +91,23 @@ void AStar::addNext(Block* next, Block* current, blockPriorityQueue& frontier, s
       }
     }
     if (accessible) {
-      frontier.push(next);
+      int newCost = costSoFar[current] + costToNext(next);
+      int priority = newCost + distanceToTarget(next, target);
+      std::tuple<Block*, int> newFrontier(next, priority);
+      frontier.push(newFrontier);
       cameFrom.emplace(next, current);
+      costSoFar.emplace(next, newCost);
+      mvprintw(next->getYPosition(), next->getXPosition(), "*");
     }
   }
 }
 
 
 std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
-  blockPriorityQueue frontier(target);
+  blockPriorityQueue frontier;
   std::set<Block*> visited;
   std::map<Block*, Block*> cameFrom;
+  std::map<Block*, int> costSoFar;
   std::vector<Block*> path;
   Block* current;
   Block* next;
@@ -98,24 +116,26 @@ std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
   
   if (!origin || !target) return path;
   
-  frontier.push(origin);
+  std::tuple<Block*, int> originTuple(origin, 0);
+  frontier.push(originTuple);
   visited.emplace(origin);
   cameFrom.emplace(origin, nullptr);
+  costSoFar.emplace(origin, 0);
 
   while(!frontier.empty()) {
-    current = frontier.top(); frontier.pop();
+    current = std::get<0>(frontier.top()); frontier.pop();
     if (current == target) break;
     y = current->getYPosition();
     x = current->getXPosition();
 
     next = _map->getBlockAtPosition(y+ABOVE, x);
-    addNext(next, current, frontier, visited, cameFrom);
+    addNext(next, current, target, frontier, visited, cameFrom, costSoFar);
     next = _map->getBlockAtPosition(y+BELOW, x);
-    addNext(next, current, frontier, visited, cameFrom);
+    addNext(next, current, target, frontier, visited, cameFrom, costSoFar);
     next = _map->getBlockAtPosition(y, x+LEFT);
-    addNext(next, current, frontier, visited, cameFrom);
+    addNext(next, current, target, frontier, visited, cameFrom, costSoFar);
     next = _map->getBlockAtPosition(y, x+RIGHT);
-    addNext(next, current, frontier, visited, cameFrom);
+    addNext(next, current, target, frontier, visited, cameFrom, costSoFar);
   }
 
   if (visited.find(target) != visited.end()) {
