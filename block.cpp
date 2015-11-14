@@ -116,6 +116,9 @@ bool Block::isFullyPassable() const {
   return isPassableFromSides() && isPassableFromAbove() && isPassableFromAboveKeyDown() && isPassableFromBelow();
 }
 
+bool Block::isPassable() const {
+  return isPassableFromSides() || isPassableFromAbove() || isPassableFromAboveKeyDown() || isPassableFromBelow();
+}
 
 void Block::setPassableFromLeft(const bool passable) {
   _passableFromLeft = passable;

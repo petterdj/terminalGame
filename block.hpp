@@ -36,6 +36,7 @@ namespace terminalGame {
       bool isPassableFromSides() const;
       bool isPlatformPassable() const;
       bool isFullyPassable() const;
+      bool isPassable() const;
 
       void setPlatformPassable();
       void setPassableFromLeft(const bool);
