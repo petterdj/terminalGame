@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
   raw();
   resize_term(HEIGHT, WIDTH);
   _level = new Level();
-  _level->loadLevel("levels/level1");
+  _level->loadLevel("levels/level2");
 
   _player = new Character(10, 10, "<", ">", RIGHT);
   _characterVector.push_back(_player);
@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
 
   _aStar = new AStar(_level);
   std::vector<Block*> path;
-  Block* target = _level->getBlockAtPosition(17,56);
+  Block* target = _level->getBlockAtPosition(13,56);
   int pathUpdateTimer = 0;
 
   bool run = true;
