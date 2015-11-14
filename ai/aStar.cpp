@@ -44,7 +44,7 @@ AStar::~AStar() {
 }
 
 // FUNCTIONS //
-int AStar::direction(Block* next, Block* current) {
+int AStar::direction(const Block* next, const Block* current) const {
   int nY = next->getYPosition();
   int nX = next->getXPosition();
   int cY = current->getYPosition();
@@ -66,42 +66,45 @@ int AStar::costToNext(const Block* next) const {
   return 1;
 }
 
+bool AStar::accessibleFromCurrent(const Block* next, const Block* current) const {
+  bool accessible = false;
+  if (next->isFullyPassable()) accessible = true;
+  else {
+    // If the next object is not fully passable, determine from which direction we're coming and see if it is passable from this direction
+    switch(direction(next, current)) {
+      case UP:
+        if (next->isPassableFromBelow()) accessible = true;
+        break;
+      case DOWN:
+        if (next->isPassableFromAbove() || next->isPassableFromAboveKeyDown()) accessible = true;
+        break;
+      case LEFT:
+        if (next->isPassableFromLeft()) accessible = true;
+        break;
+      case RIGHT:
+        if (next->isPassableFromRight()) accessible = true;
+      default:
+        break;
+    }
+  }
+  return accessible;
+}
+
 void AStar::addNext(Block* next, Block* current, Block* target, blockPriorityQueue& frontier, std::set<Block*>& visited, 
                     std::map<Block*, Block*>& cameFrom, std::map<Block*, int>& costSoFar) {
   if (next && visited.find(next) == visited.end()) {
     visited.emplace(next);
-   
-    bool accessible = false;
-    if (!next->isFullyPassable()) {
-      // If the next object is not fully passable, determine from which direction we're coming and see if it is passable from this direction
-      switch(direction(next, current)) {
-        case UP:
-          if (next->isPassableFromBelow()) accessible = true;
-          break;
-        case DOWN:
-          if (next->isPassableFromAbove() || next->isPassableFromAboveKeyDown()) accessible = true;
-          break;
-        case LEFT:
-          if (next->isPassableFromLeft()) accessible = true;
-          break;
-        case RIGHT:
-          if (next->isPassableFromRight()) accessible = true;
-        default:
-          break;
-      }
-    }
-    if (accessible) {
+    if (accessibleFromCurrent(next, current)) {
       int newCost = costSoFar[current] + costToNext(next);
       int priority = newCost + distanceToTarget(next, target);
       std::tuple<Block*, int> newFrontier(next, priority);
       frontier.push(newFrontier);
       cameFrom.emplace(next, current);
       costSoFar.emplace(next, newCost);
-      mvprintw(next->getYPosition(), next->getXPosition(), "*");
+      mvprintw(next->getYPosition(), next->getXPosition(), "*"); // For debugging or optimization
     }
   }
 }
-
 
 std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
   blockPriorityQueue frontier;
@@ -114,7 +117,7 @@ std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
   int y;
   int x;
   
-  if (!origin || !target) return path;
+  if (!origin || !target || !target->isPassable() || !origin->isPassable()) return path;
   
   std::tuple<Block*, int> originTuple(origin, 0);
   frontier.push(originTuple);

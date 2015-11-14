@@ -18,10 +18,11 @@ class AStar {
     Level* _map;
 
     // HELPERS //
-    int direction(Block*, Block*);
+    int direction(const Block*, const Block*) const;
     void addNext(Block*, Block*, Block*, blockPriorityQueue& frontier, std::set<Block*>& visited, std::map<Block*, Block*>& cameFrom, std::map<Block*, int>& costSoFar);
     int distanceToTarget(const Block*, const Block*) const;
     int costToNext(const Block*) const;
+    bool accessibleFromCurrent(const Block*, const Block*) const;
 
   public:
     // CONSTRUCTORS //
