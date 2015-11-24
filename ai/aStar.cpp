@@ -44,12 +44,7 @@ AStar::~AStar() {
 }
 
 // FUNCTIONS //
-//int AStar::direction(const Block* next, const Block* current) const {
 int AStar::direction(const Node& next, const Node& current) const {
-  //int nY = next->getYPosition();
-  //int nX = next->getXPosition();
-  //int cY = current->getYPosition();
-  //int cX = current->getXPosition();
   if (next.y < current.y) return UP;
   if (next.y > current.y) return DOWN;
   if (next.x < current.x) return LEFT;
@@ -57,15 +52,10 @@ int AStar::direction(const Node& next, const Node& current) const {
   return 0;
 }
 
-//int AStar::distanceToTarget(const Block* current, const Block* target) const {
 int AStar::distanceToTarget(const Node current, const Node target) const {
-  //int cY = current->getYPosition(); int cX = current->getXPosition(); 
-  //int tY = target->getYPosition(); int tX = target->getXPosition();
-  //return abs(cY-tY) + abs(cX-tX);
   return abs(current.y-target.y) + abs(current.x-target.x);
 }
 
-//int AStar::costToNext(const Block* next) const {
 int AStar::costToNext(const Node& next) const {
   return 1;
 }
@@ -87,17 +77,13 @@ bool AStar::accessibleFromCurrent(const Node& next, const Node& current) const {
   }
 }
 
-//void AStar::addNext(Block* next, Block* current, Block* target, blockPriorityQueue& frontier, std::set<Block*>& visited, 
-//                    std::map<Block*, Block*>& cameFrom, std::map<Block*, int>& costSoFar) {
 void AStar::addNext(Node& next, Node& current, Node& target, nodePriorityQueue& frontier, std::set<Node>& visited, 
                     std::map<Node, Node>& cameFrom, std::map<Node, int>& costSoFar) {
   if (visited.find(next) == visited.end()) {
     visited.emplace(next);
-    //visitedNodes.emplace(next->getYPosition(), next->getXPosition(), 0);
     if (accessibleFromCurrent(next, current)) {
       int newCost = costSoFar[current] + costToNext(next);
       int priority = newCost + distanceToTarget(next, target);
-      //std::tuple<Block*, int> newFrontier(next, priority);
       std::tuple<Node, int> newFrontier(next, priority);
       frontier.push(newFrontier);
       cameFrom.emplace(next, current);
@@ -109,16 +95,11 @@ void AStar::addNext(Node& next, Node& current, Node& target, nodePriorityQueue& 
 
 std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
   nodePriorityQueue frontier;
-  //std::set<Block*> visited;
   std::set<Node> visited;
-  //std::map<Block*, Block*> cameFrom;
-  //std::map<Block*, int> costSoFar;
   std::vector<Block*> path;
   std::map<Node, Node> cameFrom;
   std::map<Node, int> costSoFar;
-  //Block* current;
   Node current;
-  //Block* next;
   Node next;
   Block* nextBlock;
   int y;
@@ -127,7 +108,6 @@ std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
   if (!origin || !target || !target->isPassable() || !origin->isPassable()) return path;
   Node originNode(origin->getYPosition(), origin->getXPosition(), 0);
   Node targetNode(target->getYPosition(), target->getXPosition(), 0);
-  //std::tuple<Block*, int> originTuple(origin, 0);
   std::tuple<Node, int> originTuple(originNode, 0);
   frontier.push(originTuple);
   visited.emplace(originNode);
