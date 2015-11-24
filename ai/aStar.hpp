@@ -19,6 +19,7 @@ class AStar {
 
     // HELPERS //
     int direction(const Node&, const Node&) const;
+    int nextZValue(const Node&, const Node&, const Block*) const;
     void addNext(Node&, Node&, Node&, nodePriorityQueue& frontier, std::set<Node>& visited, std::map<Node, Node>& cameFrom, std::map<Node, int>& costSoFar);
     int distanceToTarget(const Node, const Node) const;
     int costToNext(const Node&) const;

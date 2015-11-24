@@ -35,5 +35,5 @@ const float DECELERATIONLEFT = -5;
 // AI constants
 const int ATTACK = 0;
 const int SURVIVE = 1;
-const int MAXJUMPHEIGHT = 5;
+const int MAXJUMPHEIGHT = 10;
 #endif

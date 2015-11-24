@@ -1,6 +1,7 @@
 #include "aStar.hpp"
 #include <algorithm>
 #include <ncurses.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace terminalGame;
 
@@ -66,16 +67,27 @@ bool AStar::accessibleFromCurrent(const Node& next, const Node& current) const {
   // Determine from which direction we're coming and see if it is passable from this direction, and if it is possible to keep going up
   switch(direction(next, current)) {
     case UP:
-      if (next.z <= MAXJUMPHEIGHT && nextBlock->isPassableFromBelow()) return true;
+      if (next.z > MAXJUMPHEIGHT) return false;
+        if (nextBlock->isPassableFromBelow()) return true;
     case DOWN:
       if (nextBlock->isPassableFromAbove() || nextBlock->isPassableFromAboveKeyDown()) return true;
     case LEFT:
+      if (next.z > MAXJUMPHEIGHT) return false;
       if (nextBlock->isPassableFromLeft()) return true;
     case RIGHT:
+      if (next.z > MAXJUMPHEIGHT) return false;
       if (nextBlock->isPassableFromRight()) return true;
     default:
       return false;
   }
+}
+
+int AStar::nextZValue(const Node& current, const Node& next, const Block* belowNext) const {
+  if (belowNext && belowNext->isPassableFromAbove()) {
+    if (next.z % 2 == 0) return current.z + 2;
+    return current.z + 1;
+  }
+  return 0;
 }
 
 void AStar::addNext(Node& next, Node& current, Node& target, nodePriorityQueue& frontier, std::set<Node>& visited, 
@@ -89,7 +101,7 @@ void AStar::addNext(Node& next, Node& current, Node& target, nodePriorityQueue& 
       frontier.push(newFrontier);
       cameFrom.emplace(next, current);
       costSoFar.emplace(next, newCost);
-      mvprintw(next.y, next.x, "*"); // For debugging or optimization
+      //mvprintw(next.y, next.x, boost::lexical_cast<std::string>(next.z).c_str()); // For debugging or optimization
     }
   }
 }
@@ -103,6 +115,7 @@ std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
   Node current;
   Node next;
   Block* nextBlock;
+  Block* belowNextBlock;
   int y;
   int x;
   
@@ -117,23 +130,32 @@ std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
 
   while(!frontier.empty()) {
     current = std::get<0>(frontier.top()); frontier.pop();
-    if (!_map->getBlockAtPosition(current.y+DOWN, current.x)->isPassableFromAbove()) current.z = 0;
-    if (current == targetNode) break;
+    if (current.y == targetNode.y && current.x == targetNode.x) break;
     y = current.y;
     x = current.x;
 
-    next.z = current.z+1; // TODO: SET APPROPRIATE Z-VALUE AND RESET IT WHEN THERE IS A BLOCK BELOW
+    // BELOW
     nextBlock = _map->getBlockAtPosition(y+BELOW, x);
+    belowNextBlock = _map->getBlockAtPosition(y+2*BELOW, x);
+    (belowNextBlock && belowNextBlock->isPassableFromAbove()) ? next.z = current.z : next.z = 0;
     next.y = nextBlock->getYPosition(); next.x = nextBlock->getXPosition();
     addNext(next, current, targetNode, frontier, visited, cameFrom, costSoFar);
+    // LEFT
     nextBlock = _map->getBlockAtPosition(y, x+LEFT);
+    belowNextBlock = _map->getBlockAtPosition(y+BELOW, x+LEFT);
+    (belowNextBlock && belowNextBlock->isPassableFromAbove()) ? next.z = current.z+1 : next.z = 0;
     next.y = nextBlock->getYPosition(); next.x = nextBlock->getXPosition();
     addNext(next, current, targetNode, frontier, visited, cameFrom, costSoFar);
+    // RIGHT
     nextBlock = _map->getBlockAtPosition(y, x+RIGHT);
+    belowNextBlock = _map->getBlockAtPosition(y+BELOW, x+RIGHT);
+    (belowNextBlock && belowNextBlock->isPassableFromAbove()) ? next.z = current.z+1 : next.z = 0;
     next.y = nextBlock->getYPosition(); next.x = nextBlock->getXPosition();
     addNext(next, current, targetNode, frontier, visited, cameFrom, costSoFar);
+    // UP
     nextBlock = _map->getBlockAtPosition(y+ABOVE, x);
-    next.y = nextBlock->getYPosition(); next.x = nextBlock->getXPosition();
+    belowNextBlock = _map->getBlockAtPosition(y, x);
+    next.y = nextBlock->getYPosition(); next.x = nextBlock->getXPosition(); next.z = nextZValue(next, current, belowNextBlock);
     addNext(next, current, targetNode, frontier, visited, cameFrom, costSoFar);
   }
 
