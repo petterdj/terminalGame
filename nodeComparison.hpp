@@ -10,12 +10,11 @@ struct Node { int y; int x; int z;
   Node() {}
   Node(int v, int u, int w) { y = v; x = u; z = w; }
 };
-bool operator<(const Node& l, const Node& r) { return std::tie(l.y, l.x, l.z) < std::tie(r.y, r.x, r.z); }
-bool operator==(const Node& l, const Node& r) { return std::tie(l.y, l.x, l.z) == std::tie(r.y, r.x, r.z); }
-bool operator!=(const Node& l, const Node& r) { return std::tie(l.y, l.x, l.z) != std::tie(r.y, r.x, r.z); }
+inline bool operator<(const Node& l, const Node& r) { return std::tie(l.y, l.x, l.z) < std::tie(r.y, r.x, r.z); }
+inline bool operator==(const Node& l, const Node& r) { return std::tie(l.y, l.x, l.z) == std::tie(r.y, r.x, r.z); }
+inline bool operator!=(const Node& l, const Node& r) { return std::tie(l.y, l.x, l.z) != std::tie(r.y, r.x, r.z); }
 
 class nodeComparison {
-  private:
   public:
     nodeComparison() { }
     ~nodeComparison() { }
