@@ -62,6 +62,7 @@ int AStar::costToNext(const Node& next) const {
 
 bool AStar::accessibleFromCurrent(const Node& next, const Node& current) const {
   Block* nextBlock = _map->getBlockAtPosition(next.y, next.x);
+  if (!nextBlock) return false;
   // Determine from which direction we're coming and see if it is passable from this direction, and if it is possible to keep going up
   switch(direction(next, current)) {
     case UP:
@@ -116,11 +117,12 @@ std::vector<Block*> AStar::findPath(Block* origin, Block* target) {
 
   while(!frontier.empty()) {
     current = std::get<0>(frontier.top()); frontier.pop();
+    if (!_map->getBlockAtPosition(current.y+DOWN, current.x)->isPassableFromAbove()) current.z = 0;
     if (current == targetNode) break;
     y = current.y;
     x = current.x;
 
-    next.z = 0; // TODO: SET APPROPRIATE Z-VALUE AND RESET IT WHEN THERE IS A BLOCK BELOW
+    next.z = current.z+1; // TODO: SET APPROPRIATE Z-VALUE AND RESET IT WHEN THERE IS A BLOCK BELOW
     nextBlock = _map->getBlockAtPosition(y+BELOW, x);
     next.y = nextBlock->getYPosition(); next.x = nextBlock->getXPosition();
     addNext(next, current, targetNode, frontier, visited, cameFrom, costSoFar);
